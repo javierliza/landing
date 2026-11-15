@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Paleta C: grafito y turquesa (tokens de globals-tokens.css). Ver DESIGN.md. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Public Sans se carga con next/font y se expone en --font-public-sans */
+  --font-sans: var(--font-public-sans), "Public Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #111827;
+  --color-ink-2: #1F2A3C;
+  --color-primary: #0E7490;
+  --color-primary-dark: #0A5A72;
+  --color-accent: #67C8DA;
+  --color-slate: #404B5A;
+  --color-gray: #5B6675;
+  --color-bg: #F4F6F8;
+  --color-chip: #ECEFF2;
+  --color-line: #DDE3E9;
+  --color-line-strong: #CBD3DB;
+  --color-on-dark: #D6E6EC;
+  --color-on-dark-muted: #BCC6D2;
+  --color-ok: #1B6B49;
+  --color-ok-bg: #DCEFE6;
+  --color-warn: #8A5A00;
+  --color-warn-bg: #FDF0CF;
+
+  /* Alias que esperan los bloques de Ruixen/shadcn, mapeados a la paleta de la guía. */
+  --color-background: #FFFFFF;
+  --color-foreground: #111827;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #111827;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #111827;
+  --color-muted: #ECEFF2;
+  --color-muted-foreground: #5B6675;
+  --color-border: #DDE3E9;
+  --color-input: #CBD3DB;
+  --color-ring: #0E7490;
+  --color-primary-foreground: #FFFFFF;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+::selection { background: var(--color-primary); color: #fff; }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* ── Revelados: CSS scroll-driven con fallback a IntersectionObserver ── */
+@keyframes reveal-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@supports (animation-timeline: view()) {
+  .reveal { animation: reveal-up linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+}
+@supports not (animation-timeline: view()) {
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+}
+
+/* ── Marquee ── */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 70s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* ── Progreso del showcase de productos (7 s, se pausa al hover del contenedor) ── */
+@keyframes tab-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.tab-progress { transform-origin: left; animation: tab-progress 7s linear forwards; }
+.showcase:hover .tab-progress, .showcase:focus-within .tab-progress { animation-play-state: paused; }
+
+/* ── Puntos animados de los conectores de la plataforma ── */
+@keyframes flow-y { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(var(--d, 56px)); opacity: 0; } }
+.flow-dot { animation: flow-y 2.4s linear infinite; }
+/* La ilustración de la portada va estática (sin animación). */
+.hero-static .fdot { animation: none !important; opacity: 1 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { animation: none !important; opacity: 1 !important; transform: none !important; transition: none !important; }
+  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+  .tab-progress { animation: none; transform: scaleX(1); }
+  .flow-dot { animation: none; opacity: 1; }
+}
+
+/* ── Entrada escalonada (contenido de paneles) ── */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .55s cubic-bezier(.2, .7, .2, 1) both; }
+/* Indicador de avance del testimonio activo */
+.auto-progress { transform-origin: left; animation: tab-progress 7s linear forwards; }
+.is-paused .auto-progress { animation-play-state: paused; }
+/* Pista de scroll de la portada */
+@keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.cue { animation: cue 2.2s cubic-bezier(.6, 0, .3, 1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .rise, .cue { animation: none; }
+  .auto-progress { animation: none; transform: scaleX(1); }
 }

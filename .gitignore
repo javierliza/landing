@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Archivos locales y sobrantes de las pruebas de diseño (no se usan en la landing)
+/.claude/
+/public/shots/
+/public/products/
+/public/brand/
