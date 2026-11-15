@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Proel Medical Technologies · landing
 
-## Getting Started
+Landing de Proel (productos Leannec, RP Speciality y TurboSurge). Next.js 16 (App Router), React 19, Tailwind CSS 4 y `motion`.
 
-First, run the development server:
+> Antes de tocar la interfaz, leer [DESIGN.md](DESIGN.md): manda sobre cualquier otro estilo.
+
+## Desarrollo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run lint
+npm run build   # build de producción
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estructura
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Ruta | Contenido |
+| --- | --- |
+| `src/app` | Layout, página única y estilos globales (`globals.css`) |
+| `src/components/site` | Secciones de la landing (hero, nosotros, productos, clientes, contacto) |
+| `src/components/ruixen` | Bloques de Ruixen en uso, adaptados a la paleta |
+| `src/styles/palettes.css` | Colores de la marca: una paleta por bloque |
+| `src/lib` | Paletas, hook de paleta y utilidades |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Paletas de color
 
-## Learn More
+Los colores se definen una sola vez en `src/styles/palettes.css`. Hay un selector de paleta para revisión interna (abajo a la derecha); la elección se comparte con `?paleta=azul|verde|indigo|turquesa`.
 
-To learn more about Next.js, take a look at the following resources:
+Para **publicar la versión final** sin selector, definir en el hosting la variable de entorno:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+NEXT_PUBLIC_PALETTE_SWITCHER=off
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+y volver a desplegar (se aplica en el build). Detalle en [DESIGN.md](DESIGN.md#variantes-de-paleta-revisión).
 
-## Deploy on Vercel
+## Contenido pendiente
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Capturas reales de los productos (`image` en `PRODUCTS`, `src/components/site/products.tsx`), logos de clientes (`logo` en `CLIENTS`, `src/components/site/proof.tsx`), logo oficial y datos de contacto de Proel. Ver DESIGN.md → Contenido.

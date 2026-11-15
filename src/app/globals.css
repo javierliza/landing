@@ -1,46 +1,118 @@
 @import "tailwindcss";
 
-/* Paleta C: grafito y turquesa (tokens de globals-tokens.css). Ver DESIGN.md. */
-@theme inline {
+@import "./../styles/palettes.css";
+
+/*
+ * Tokens de Tailwind. Los colores apuntan a las variables de la paleta activa (src/styles/palettes.css),
+ * por eso este bloque NO usa `inline`: las utilidades (`bg-primary`, `text-ink`…) leen la variable en tiempo
+ * de ejecución y cambian al cambiar de paleta. Ver DESIGN.md.
+ */
+@theme {
   /* Public Sans se carga con next/font y se expone en --font-public-sans */
   --font-sans: var(--font-public-sans), "Public Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #111827;
-  --color-ink-2: #1F2A3C;
-  --color-primary: #0E7490;
-  --color-primary-dark: #0A5A72;
-  --color-accent: #67C8DA;
-  --color-slate: #404B5A;
-  --color-gray: #5B6675;
-  --color-bg: #F4F6F8;
-  --color-chip: #ECEFF2;
-  --color-line: #DDE3E9;
-  --color-line-strong: #CBD3DB;
-  --color-on-dark: #D6E6EC;
-  --color-on-dark-muted: #BCC6D2;
-  --color-ok: #1B6B49;
-  --color-ok-bg: #DCEFE6;
-  --color-warn: #8A5A00;
-  --color-warn-bg: #FDF0CF;
+  --color-ink: var(--pal-ink);
+  --color-ink-2: var(--pal-ink-2);
+  --color-primary: var(--pal-primary);
+  --color-primary-dark: var(--pal-primary-dark);
+  --color-primary-light: var(--pal-primary-light);
+  --color-accent: var(--pal-accent);
+  --color-slate: var(--pal-slate);
+  --color-gray: var(--pal-gray);
+  --color-bg: var(--pal-bg);
+  --color-chip: var(--pal-chip);
+  --color-line: var(--pal-line);
+  --color-line-strong: var(--pal-line-strong);
+  --color-on-dark: var(--pal-on-dark);
+  --color-on-dark-muted: var(--pal-on-dark-muted);
 
-  /* Alias que esperan los bloques de Ruixen/shadcn, mapeados a la paleta de la guía. */
-  --color-background: #FFFFFF;
-  --color-foreground: #111827;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #111827;
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #111827;
-  --color-muted: #ECEFF2;
-  --color-muted-foreground: #5B6675;
-  --color-border: #DDE3E9;
-  --color-input: #CBD3DB;
-  --color-ring: #0E7490;
-  --color-primary-foreground: #FFFFFF;
+  /* Estados: no cambian con la paleta. */
+  --color-ok: #1b6b49;
+  --color-ok-bg: #dcefe6;
+  --color-warn: #8a5a00;
+  --color-warn-bg: #fdf0cf;
+
+  /* Alias que esperan los componentes de shadcn/Ruixen, mapeados a la paleta. */
+  --color-background: #ffffff;
+  --color-foreground: var(--pal-ink);
+  --color-card: #ffffff;
+  --color-card-foreground: var(--pal-ink);
+  --color-popover: #ffffff;
+  --color-popover-foreground: var(--pal-ink);
+  --color-muted: var(--pal-chip);
+  --color-muted-foreground: var(--pal-gray);
+  --color-border: var(--pal-line);
+  --color-input: var(--pal-line-strong);
+  --color-ring: var(--pal-primary);
+  --color-primary-foreground: #ffffff;
+}
+
+/*
+ * Degradés de fondo que dependen de la paleta. Se arman con color-mix sobre los tokens, así que siguen a la
+ * paleta activa. Son la excepción deliberada a "sin degradés" (DESIGN.md): solo se usan donde están hoy.
+ */
+@utility bg-grad-contact {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-primary) 0%,
+    color-mix(in srgb, var(--color-primary) 80%, var(--color-ink)) 40%,
+    color-mix(in srgb, var(--color-primary) 35%, var(--color-ink)) 82%,
+    var(--color-ink) 100%
+  );
+}
+@utility bg-grad-contact-glow {
+  background-image:
+    radial-gradient(60% 70% at 88% 8%, color-mix(in srgb, var(--color-accent) 38%, transparent), transparent 70%),
+    radial-gradient(55% 60% at 5% 95%, color-mix(in srgb, var(--color-primary-dark) 55%, transparent), transparent 70%);
+}
+@utility bg-grad-platform-y {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-primary) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-primary) 50%, transparent) 30%,
+    color-mix(in srgb, var(--color-primary) 10%, transparent) 60%,
+    transparent 85%
+  );
+}
+@utility bg-grad-platform-x {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-primary) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-primary) 50%, transparent) 26%,
+    color-mix(in srgb, var(--color-primary) 12%, transparent) 50%,
+    transparent 75%
+  );
+}
+@utility bg-grad-edge-white {
+  background-image: linear-gradient(to right, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.1) 70%, transparent);
+}
+@utility bg-grad-edge-accent {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-accent) 90%, transparent),
+    color-mix(in srgb, var(--color-accent) 15%, transparent) 60%,
+    transparent
+  );
+}
+@utility bg-grad-line-accent {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-accent) 90%, transparent),
+    color-mix(in srgb, var(--color-accent) 25%, transparent)
+  );
+}
+@utility bg-grad-bar-primary {
+  background-image: linear-gradient(
+    to right,
+    var(--color-primary),
+    color-mix(in srgb, var(--color-accent) 50%, transparent) 55%,
+    transparent
+  );
 }
 
 html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 body {
-  background: #fff;
+  background: #ffffff;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

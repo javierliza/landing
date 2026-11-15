@@ -12,11 +12,11 @@ const FLOW = Array.from({ length: 18 }, (_, i) => {
   const ey = 30 + i * 36; // llegada: abiertas
   return { d: `M -40 ${sy} C 560 ${sy}, 800 ${ey}, 1480 ${ey}`, o: 1 - (i % 5) * 0.1 };
 });
-/** Puntos que recorren algunas líneas: [línea, duración (s), inicio (s), color]. */
+/** Puntos que recorren algunas líneas: [línea, duración (s), inicio (s), clase de relleno]. */
 const DOTS: [number, number, number, string][] = [
-  [3, 11, 1.5, "#ffffff"],
-  [9, 14, 4, "#67C8DA"],
-  [15, 12, 7.5, "#ffffff"],
+  [3, 11, 1.5, "fill-white"],
+  [9, 14, 4, "fill-accent"],
+  [15, 12, 7.5, "fill-white"],
 ];
 
 export function Hero() {
@@ -40,7 +40,7 @@ export function Hero() {
               id={`flow-${i}`}
               d={f.d}
               fill="none"
-              stroke={i % 3 === 0 ? "#67C8DA" : "#1A93B3"}
+              className={i % 3 === 0 ? "stroke-accent" : "stroke-primary-light"}
               strokeWidth={i % 3 === 0 ? 2 : 1.4}
               strokeOpacity={f.o}
               vectorEffect="non-scaling-stroke"
@@ -51,7 +51,7 @@ export function Hero() {
           ))}
           {!reduced &&
             DOTS.map(([line, dur, begin, fill]) => (
-              <rect key={line} x="-4" y="-4" width="8" height="8" fill={fill}>
+              <rect key={line} x="-4" y="-4" width="8" height="8" className={fill}>
                 <animateMotion dur={`${dur}s`} begin={`${begin}s`} repeatCount="indefinite" calcMode="linear">
                   <mpath href={`#flow-${line}`} />
                 </animateMotion>

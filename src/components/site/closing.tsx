@@ -37,7 +37,7 @@ function ContactForm() {
       onSubmit={submit}
       className="relative overflow-hidden rounded-[6px] border border-white/20 bg-white/[0.08] p-6 text-white backdrop-blur-md sm:p-8"
     >
-      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(to_right,rgba(255,255,255,0.7),rgba(255,255,255,0.1)_70%,transparent)]" />
+      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-grad-edge-white" />
       <h3 className="text-2xl tracking-[-0.02em]">Pedí una demo</h3>
       <p className="mt-2 text-[15px] text-white/85">Contanos qué necesitás y te respondemos a la brevedad.</p>
 
@@ -88,12 +88,12 @@ export function Contact() {
   return (
     <section
       id="contacto"
-      className="relative overflow-hidden bg-[linear-gradient(to_bottom,#0E7490_0%,#0C6781_40%,#12384A_82%,#111827_100%)] py-16 text-white md:py-24"
+      className="relative overflow-hidden bg-grad-contact py-16 text-white md:py-24"
     >
       {/* Halos de luz suaves (degradés radiales): uno turquesa claro arriba a la derecha y otro más profundo abajo a la izquierda. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_70%_at_88%_8%,rgba(103,200,218,0.38),transparent_70%),radial-gradient(55%_60%_at_5%_95%,rgba(10,90,114,0.55),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-grad-contact-glow"
       />
       <Container className="relative grid gap-12 lg:grid-cols-12 lg:gap-x-10">
         <div className="lg:col-span-6">

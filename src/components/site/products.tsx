@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useReducedMotion } from "motion/react";
+import { useCssVar } from "@/lib/use-palette";
 import CloudBackground from "@/components/ruixen/cloud-background";
 import { Container, Label, LINKS } from "./brand";
 
@@ -86,13 +87,16 @@ const OUTSIDE = ["ANMAT", "Superintendencia de Servicios de Salud", "Surge", "Si
 export function Products() {
   const reduced = useReducedMotion();
   const [active, setActive] = useState(1);
+  // El fondo WebGL no usa CSS: se le pasan los colores de la paleta activa.
+  const ink = useCssVar("--color-ink", "#111827");
+  const primary = useCssVar("--color-primary", "#0e7490");
   const p = PRODUCTS[active];
 
   return (
     <section id="productos" className="relative overflow-hidden bg-ink py-16 text-on-dark md:py-24">
       {!reduced && (
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-25">
-          <CloudBackground darkTheme resolutionScale={0.6} className="absolute inset-0" />
+          <CloudBackground darkTheme darkColorA={ink} darkColorB={primary} resolutionScale={0.6} className="absolute inset-0" />
         </div>
       )}
 
@@ -167,7 +171,7 @@ export function Products() {
           key={p.id}
           className="rise relative mt-8 overflow-hidden rounded-[6px] border border-white/15 bg-white/[0.07] p-6 text-white backdrop-blur-md md:mt-10 md:p-9"
         >
-          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(to_right,rgba(255,255,255,0.6),rgba(255,255,255,0.1)_70%,transparent)]" />
+          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-grad-edge-white" />
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
             <div className="flex flex-col justify-between gap-7 lg:col-span-5 lg:min-h-[360px]">
               <div>
@@ -189,7 +193,7 @@ export function Products() {
             </div>
 
             <div className="relative lg:col-span-7">
-              <div className="overflow-hidden rounded-[6px] border border-white/20 bg-ink/70 shadow-[0_30px_60px_-30px_rgba(0,0,0,.6)] lg:absolute lg:-bottom-9 lg:-right-9 lg:left-0 lg:top-0 lg:rounded-b-none lg:rounded-tr-none lg:border-b-0 lg:border-r-0">
+              <div className="overflow-hidden rounded-[6px] border border-white/20 bg-ink/70 shadow-[0_30px_60px_-30px_rgb(0_0_0/.6)] lg:absolute lg:-bottom-9 lg:-right-9 lg:left-0 lg:top-0 lg:rounded-b-none lg:rounded-tr-none lg:border-b-0 lg:border-r-0">
                 {/* Barra de la ventana */}
                 <div aria-hidden className="flex h-9 items-center gap-1.5 border-b border-white/15 bg-white/[0.06] px-4">
                   <span className="size-2 bg-white/30" />
@@ -223,10 +227,10 @@ export function Products() {
         <div className="reveal relative mt-3 overflow-hidden rounded-[6px] border border-white/10 bg-white/[0.04] backdrop-blur-md">
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(14,116,144,0.9)_0%,rgba(14,116,144,0.5)_30%,rgba(14,116,144,0.1)_60%,transparent_85%)] lg:bg-[linear-gradient(to_right,rgba(14,116,144,0.9)_0%,rgba(14,116,144,0.5)_26%,rgba(14,116,144,0.12)_50%,transparent_75%)]"
+            className="absolute inset-0 bg-grad-platform-y lg:bg-grad-platform-x"
           />
           {/* Brillo fino en el borde superior */}
-          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(to_right,rgba(103,200,218,0.9),rgba(103,200,218,0.15)_60%,transparent)]" />
+          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-grad-edge-accent" />
 
           <div className="relative grid lg:grid-cols-12">
             <div className="px-6 py-7 text-white lg:col-span-4 lg:px-9 lg:py-9">
@@ -243,7 +247,7 @@ export function Products() {
                 {/* Línea que sale de la plataforma y se apaga hacia la derecha (solo escritorio) */}
                 <span
                   aria-hidden
-                  className="absolute -left-9 right-0 top-0 hidden h-px bg-[linear-gradient(to_right,rgba(103,200,218,0.9),rgba(103,200,218,0.25))] lg:block"
+                  className="absolute -left-9 right-0 top-0 hidden h-px bg-grad-line-accent lg:block"
                 />
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-5 md:grid-cols-4 md:gap-x-6">
                   {OUTSIDE.map((o, i) => (

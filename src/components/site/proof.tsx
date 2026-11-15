@@ -113,13 +113,13 @@ export function Clients() {
     >
       <Split label="Clientes">
         <figure
-          className={`relative overflow-hidden rounded-[6px] border border-line bg-white p-6 shadow-[0_24px_60px_-40px_rgba(17,24,39,.35)] sm:p-9 lg:p-12 ${paused || stopped ? "is-paused" : ""}`}
+          className={`relative overflow-hidden rounded-[6px] border border-line bg-white p-6 shadow-[0_24px_60px_-40px_rgb(0_0_0/.3)] sm:p-9 lg:p-12 ${paused || stopped ? "is-paused" : ""}`}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
         >
-          <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(to_right,#0E7490,rgba(103,200,218,0.5)_55%,transparent)]" />
+          <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-grad-bar-primary" />
           <div className="lg:min-h-[12.5rem]" aria-live={stopped || reduced ? "polite" : "off"}>
             <AnimatePresence mode="wait" initial={false}>
               <motion.blockquote

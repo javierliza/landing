@@ -41,7 +41,7 @@ function AccessMenu({ light = false }: { light?: boolean }) {
         <ChevronDown className={`size-4 transition-transform ${light ? "text-white/70" : "text-gray"} ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div role="menu" className="rise absolute right-0 top-full z-50 mt-1.5 w-56 rounded-[4px] border border-line bg-white py-1 shadow-[0_12px_28px_-16px_rgba(17,24,39,.35)]">
+        <div role="menu" className="rise absolute right-0 top-full z-50 mt-1.5 w-56 rounded-[4px] border border-line bg-white py-1 shadow-[0_12px_28px_-16px_rgb(0_0_0/.3)]">
           {ACCESS.map((a) => (
             <a
               key={a}

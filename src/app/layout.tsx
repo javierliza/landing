@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Public_Sans } from "next/font/google";
+import { PALETTE_BOOT_SCRIPT, PALETTE_SWITCHER_ENABLED } from "@/lib/palettes";
 import "./globals.css";
 
 const publicSans = Public_Sans({
@@ -16,7 +17,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${publicSans.variable} h-full antialiased`}>
+    // suppressHydrationWarning: el script de paleta agrega `data-palette` a <html> antes de hidratar.
+    <html lang="es" className={`${publicSans.variable} h-full antialiased`} suppressHydrationWarning>
+      {PALETTE_SWITCHER_ENABLED && (
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: PALETTE_BOOT_SCRIPT }} />
+        </head>
+      )}
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );

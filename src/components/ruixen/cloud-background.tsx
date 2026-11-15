@@ -20,6 +20,8 @@ precision highp float;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uTheme; // 0.0 = light, 1.0 = dark
+uniform vec3 uDarkA; // color base del tema oscuro
+uniform vec3 uDarkB; // color de los brillos del tema oscuro
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
@@ -85,8 +87,8 @@ void main() {
   vec3 lightA = vec3(0.94, 0.97, 1.00);
   vec3 lightB = vec3(0.16, 0.46, 0.95);
 
-  vec3 darkA  = vec3(0.067, 0.094, 0.153);
-  vec3 darkB  = vec3(0.055, 0.455, 0.565);
+  vec3 darkA  = uDarkA;
+  vec3 darkB  = uDarkB;
 
   vec3 baseA = mix(lightA, darkA, uTheme);
   vec3 baseB = mix(lightB, darkB, uTheme);
@@ -104,14 +106,28 @@ void main() {
 }
 `;
 
+/** "#rrggbb" → [r, g, b] en 0..1. */
+function hexToRgb(hex: string): [number, number, number] {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return [0, 0, 0];
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
 type Props = {
   darkTheme?: boolean;
+  /** Color base del tema oscuro, en hexadecimal (por ejemplo el `ink` de la paleta). */
+  darkColorA?: string;
+  /** Color de los brillos del tema oscuro, en hexadecimal (por ejemplo el `primary` de la paleta). */
+  darkColorB?: string;
   resolutionScale?: number; // 0.5..2.0 recommended
   className?: string;
 };
 
 export default function CloudBackground({
   darkTheme = false,
+  darkColorA = "#111827",
+  darkColorB = "#0e7490",
   resolutionScale = 1.0,
   className,
 }: Props) {
@@ -155,6 +171,8 @@ export default function CloudBackground({
         uTime: { value: 0 },
         uResolution: { value: new Vec2(1, 1) },
         uTheme: { value: darkTheme ? 1 : 0 },
+        uDarkA: { value: hexToRgb(darkColorA) },
+        uDarkB: { value: hexToRgb(darkColorB) },
       },
     });
 
@@ -213,6 +231,14 @@ export default function CloudBackground({
     if (!program) return;
     program.uniforms.uTheme.value = darkTheme ? 1 : 0;
   }, [darkTheme]);
+
+  // Update colors (paleta) without recreating WebGL
+  useEffect(() => {
+    const program = programRef.current;
+    if (!program) return;
+    program.uniforms.uDarkA.value = hexToRgb(darkColorA);
+    program.uniforms.uDarkB.value = hexToRgb(darkColorB);
+  }, [darkColorA, darkColorB]);
 
   // Update render quality without recreating WebGL
   useEffect(() => {

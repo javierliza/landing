@@ -37,8 +37,8 @@ export function SectionRail() {
   // Sobre secciones oscuras las marcas pasan a blanco y la activa a turquesa claro.
   const dark = DARK.has(CHAPTERS[current]?.id);
   const tone = {
-    "--rail-tick": dark ? "#ffffff" : "#111827",
-    "--rail-current": dark ? "#67C8DA" : "#0E7490",
+    "--rail-tick": dark ? "#ffffff" : "var(--color-ink)",
+    "--rail-current": dark ? "var(--color-accent)" : "var(--color-primary)",
   } as CSSProperties;
 
   return (

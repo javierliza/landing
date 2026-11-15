@@ -106,7 +106,7 @@ const Tick = React.memo(function Tick({
       style={{ width, opacity, scaleY }}
       className={cn(
         "block h-[2px] rounded-full",
-        isCurrent ? "bg-[var(--rail-current,#0E7490)]" : "bg-[var(--rail-tick,#111827)]",
+        isCurrent ? "bg-[var(--rail-current,var(--color-primary))]" : "bg-[var(--rail-tick,var(--color-ink))]",
       )}
     />
   );
