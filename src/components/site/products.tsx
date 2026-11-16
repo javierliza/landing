@@ -117,8 +117,8 @@ const LAYERS = [
     description: "Una misma base tecnológica, con inteligencia artificial integrada, sostiene todo el circuito de gestión, de la receta al recupero.",
     listTitle: "Recorrido de la plataforma",
     items: STAGES,
-    // Capacidad de toda la plataforma, no un nodo del recorrido: se lista aparte.
-    extra: ["Integración de IA"],
+    // Capacidad de toda la plataforma, no un nodo del recorrido: va destacada sobre la lista.
+    highlight: { title: "Integración de IA", note: "En toda la plataforma" },
     // Rótulo que acompaña al nombre de la capa en la ilustración.
     tag: "IA integrada",
   },
@@ -128,7 +128,7 @@ const LAYERS = [
     description: "La plataforma se integra con los organismos y sistemas con los que trabaja el sector.",
     listTitle: "Se integra con",
     items: OUTSIDE,
-    extra: [] as string[],
+    highlight: undefined as { title: string; note: string } | undefined,
     tag: undefined as string | undefined,
   },
 ];
@@ -153,24 +153,17 @@ const TILE_X = PRODUCTS.map((_, i) => CX + (i - (N - 1) / 2) * TILE_GAP);
 const SEL_PLATFORM = N;
 const SEL_CONNS = N + 1;
 const NODE_GAP = 68;
+/** Posición del emblema de IA en el plano de la capa 2: al frente, centrado. */
+const AI_AT = 58;
 const NODE_X = STAGES.map((_, i) => CX + (i - (STAGES.length - 1) / 2) * NODE_GAP); // nodos de la plataforma
 const CONN_X = OUTSIDE.map((_, i) => CX + (i - (OUTSIDE.length - 1) / 2) * NODE_GAP); // conexiones
+/** Altura del canto inferior de la capa `layer` en la horizontal `x`: de ahí salen las líneas hacia la capa de abajo. */
+const portY = (layer: number, x: number) => LAYER_Y[layer] + HALF - Math.abs(x - CX) / 2 + THICK;
 const pct = (x: number, y: number) => ({ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` });
 /** Lleva el plano de una capa (u, v) a la pantalla: todo lo dibujado adentro queda "acostado" sobre la capa. */
 const ISO = "matrix(1 0.5 -1 0.5 0 0)";
 /** Punto del plano que en pantalla queda `dx` a la derecha del centro de la capa, a su misma altura. */
 const onPlane = (dx: number) => ({ u: dx / 2, v: -dx / 2 });
-
-/**
- * Punto de la plataforma del que sale la línea hacia la conexión `c`: el centro del tramo de etapas del producto
- * que la usa (sus etapas ya están unidas entre sí sobre la plataforma) o, si ninguno la usa, la etapa más cercana.
- */
-function connOrigin(c: number) {
-  // Si la usan varios productos, manda el más específico (el que cubre menos nodos).
-  const owner = PRODUCTS.filter((x) => x.conns?.includes(c)).sort((a, b) => a.stages.length - b.stages.length)[0];
-  if (owner) return owner.stages.reduce((sum, n) => sum + NODE_X[n], 0) / owner.stages.length;
-  return NODE_X.reduce((a, b) => (Math.abs(b - CONN_X[c]) < Math.abs(a - CONN_X[c]) ? b : a));
-}
 
 type Tone = "vidrio" | "base" | "plataforma" | "mosaico" | "activo";
 
@@ -275,7 +268,19 @@ function Wireframe({ name }: { name: string }) {
   );
 }
 
-/** Línea entre capas; si está activa lleva un pulso de luz que la recorre. */
+/** Punto de luz en el canto de una capa, de donde sale una línea hacia la capa de abajo. */
+function Port({ x, y }: { x: number; y: number }) {
+  return (
+    <g className="rise">
+      <circle cx={x} cy={y} r={7} className="fill-accent" opacity={0.45} filter="url(#capa-brillo)" />
+      <circle cx={x} cy={y} r={3} className="fill-white" />
+    </g>
+  );
+}
+
+/**
+ * Línea entre capas (recta, o en curva si se pide). Si está activa lleva un resplandor y un pulso de luz que la recorre.
+ */
 function Beam({
   x1,
   y1,
@@ -285,6 +290,7 @@ function Beam({
   pulse,
   delay = 0,
   optional = false,
+  curved = false,
 }: {
   x1: number;
   y1: number;
@@ -295,22 +301,24 @@ function Beam({
   delay?: number;
   /** Vínculo opcional: trazo punteado, más tenue y sin pulso. */
   optional?: boolean;
+  /** Traza una curva en S en lugar de una recta. */
+  curved?: boolean;
 }) {
   const lit = on && !optional;
-  const path = `M${x1} ${y1} L${x2} ${y2}`;
+  // Curva en S: sale y llega en vertical, como un cable. Si no, recta.
+  const ym = (y1 + y2) / 2;
+  const path = curved ? `M${x1} ${y1} C${x1} ${ym} ${x2} ${ym} ${x2} ${y2}` : `M${x1} ${y1} L${x2} ${y2}`;
   return (
     <>
       {/* Resplandor bajo el haz activo */}
-      {lit && <line x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-accent" strokeWidth={5} opacity={0.4} filter="url(#capa-brillo)" />}
-      <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
+      {lit && <path d={path} fill="none" className="stroke-accent" strokeWidth={5} opacity={0.4} filter="url(#capa-brillo)" />}
+      <path
+        d={path}
+        fill="none"
         className={optional ? "stroke-accent/70" : on ? "stroke-accent" : "stroke-white/20"}
         strokeWidth={optional ? 1.25 : on ? 1.5 : 1}
         strokeDasharray={optional ? "2 5" : undefined}
-        strokeLinecap={optional ? "round" : undefined}
+        strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
       />
       {lit && pulse && (
@@ -361,8 +369,7 @@ export function Products() {
             </h2>
           </div>
           <p className="reveal max-w-md text-lg leading-relaxed text-on-dark lg:col-span-5">
-            Cada producto resuelve una parte de la gestión, y algunos suman funciones propias de una especialidad. Todos se apoyan en una misma base tecnológica y se
-            conectan con los organismos y sistemas del sector.
+            Cada producto resuelve una parte de la gestión, y algunos suman funciones propias de una especialidad. Todos se apoyan en una misma base tecnológica, con inteligencia artificial integrada, y se conectan con los organismos y sistemas del sector.
           </p>
         </div>
 
@@ -429,11 +436,16 @@ export function Products() {
                 {/* Sombra de la plataforma y enlaces hacia las conexiones (salen por debajo de la capa 2) */}
                 <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[1] + 78}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
                 {OUTSIDE.map((_, c) => {
-                  // Cada conexión sale siempre del mismo punto, esté o no elegido su producto, para que la línea no
-                  // cambie de inclinación al encenderse.
+                  // Cada conexión sube recta hasta la plataforma: cinco líneas verticales y parejas, que asoman por
+                  // debajo de la capa 2. Se enciende la de cada conexión que usa el producto elegido.
                   const on = sel === SEL_CONNS || !!product?.conns?.includes(c);
-                  return <Beam key={`${c}-${on ? sel : "r"}`} x1={connOrigin(c)} y1={LAYER_Y[1] + 4} x2={CONN_X[c]} y2={LAYER_Y[2] - 3} on={on} pulse={on && !reduced} delay={0.5} />;
+                  return <Beam key={`${c}-${on ? sel : "r"}`} x1={CONN_X[c]} y1={LAYER_Y[1] + 4} x2={CONN_X[c]} y2={LAYER_Y[2] - 3} on={on} pulse={on && !reduced} delay={0.5 + c * 0.12} />;
                 })}
+
+                {/* Aura de la plataforma: la capa con IA es la que más luz tiene de la pila */}
+                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[1] + 8}) scale(1.07) ${ISO}`} className="fill-accent" opacity={0.4} filter="url(#capa-difuso)">
+                  {!reduced && <animate attributeName="opacity" values="0.28;0.55;0.28" dur="5s" repeatCount="indefinite" />}
+                </rect>
 
                 {/* Capa 2: plataforma, con el recorrido de etapas */}
                 <Plate x={CX} y={LAYER_Y[1]} half={HALF} rx={12} t={THICK} tone="plataforma" edge={activeLayer === 1 ? "stroke-white" : "stroke-accent/70"}>
@@ -452,12 +464,27 @@ export function Products() {
                   })()}
                   {/* Integración de IA: es de toda la capa, no de una etapa. Se dibuja como un marco interior que
                       recorre la placa entera, con una luz que le da la vuelta. */}
-                  <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} fill="none" className={sel === SEL_PLATFORM ? "stroke-white/80" : "stroke-white/35"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                  <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} fill="none" className={sel === SEL_PLATFORM ? "stroke-white/90" : "stroke-white/55"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
                   {!reduced && (
-                    <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} pathLength={1} fill="none" className="stroke-white" strokeWidth={2} strokeLinecap="round" strokeDasharray="0.1 0.9">
-                      <animate attributeName="stroke-dashoffset" from={1} to={0} dur="7s" repeatCount="indefinite" />
+                    <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} pathLength={1} fill="none" className="stroke-white" strokeWidth={2} strokeLinecap="round" strokeDasharray="0.09 0.41">
+                      <animate attributeName="stroke-dashoffset" from={1} to={0} dur="9s" repeatCount="indefinite" />
                     </rect>
                   )}
+                  {/* Emblema de IA: una pieza propia de la capa, al frente de la placa y sin unir a ningún nodo. Siempre
+                      encendida, con un anillo que late. */}
+                  <g transform={`translate(${AI_AT} ${AI_AT})`}>
+                    <rect x={-22} y={-22} width={44} height={44} rx={10} className="fill-white" opacity={0.5} filter="url(#capa-difuso)" />
+                    <rect x={-17} y={-17} width={34} height={34} rx={8} fill="none" className="stroke-white" strokeWidth={1} vectorEffect="non-scaling-stroke">
+                      {!reduced && (
+                        <>
+                          <animateTransform attributeName="transform" type="scale" values="1;1.45" dur="2.6s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.8;0" dur="2.6s" repeatCount="indefinite" />
+                        </>
+                      )}
+                    </rect>
+                    <rect x={-17} y={-17} width={34} height={34} rx={8} className="fill-white" />
+                    <path transform="rotate(-45)" d="M0 -11 L3 -3 L11 0 L3 3 L0 11 L-3 3 L-11 0 L-3 -3 Z" className="fill-primary-dark" />
+                  </g>
                   {NODE_X.map((x, n) => {
                     const { u, v } = onPlane(x - CX);
                     const lit = litStages.includes(n);
@@ -471,16 +498,34 @@ export function Products() {
                   })}
                 </Plate>
 
-                {/* Sombra de la capa de productos y haces del producto elegido hacia la capa 2: salen directo del mosaico
-                    y asoman por debajo de la capa 1. Continuos a las etapas y módulos vinculados; punteados a las opcionales. */}
+                {/* Tira de luz en el canto frontal de la plataforma, con un destello que la recorre */}
+                {(() => {
+                  const y = LAYER_Y[1] + THICK / 2;
+                  const xr = 2 * HALF - 12 * (2 - Math.SQRT2);
+                  const d = `M${CX - xr} ${y} L${CX - 9} ${y + HALF - 7} Q${CX} ${y + HALF - 3.5} ${CX + 9} ${y + HALF - 7} L${CX + xr} ${y}`;
+                  return (
+                    <>
+                      <path d={d} fill="none" className="stroke-accent" strokeWidth={1.5} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                      {!reduced && (
+                        <path d={d} pathLength={1} fill="none" className="stroke-white" strokeWidth={2.5} strokeLinecap="round" strokeDasharray="0.07 0.93">
+                          <animate attributeName="stroke-dashoffset" from={1} to={0} dur="4.5s" repeatCount="indefinite" />
+                        </path>
+                      )}
+                    </>
+                  );
+                })()}
+
+                {/* Sombra de la capa de productos y haces del producto elegido hacia la capa 2. Salen todos de un mismo punto,
+                    en el canto de la capa 1 justo debajo del mosaico, y bajan en curva hasta llegar en vertical a cada nodo.
+                    Continuos a los nodos vinculados; punteados a los opcionales. */}
                 <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[0] + 78}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
                 {product && (
                   <g key={product.id}>
                     {product.stages.map((n, k) => (
-                      <Beam key={n} x1={TILE_X[sel]} y1={LAYER_Y[0] + 10} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={!reduced} delay={k * 0.3} />
+                      <Beam key={n} x1={TILE_X[sel]} y1={portY(0, TILE_X[sel])} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={!reduced} delay={k * 0.25} curved />
                     ))}
                     {optStages.map((n) => (
-                      <Beam key={`o${n}`} x1={TILE_X[sel]} y1={LAYER_Y[0] + 10} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={false} optional />
+                      <Beam key={`o${n}`} x1={TILE_X[sel]} y1={portY(0, TILE_X[sel])} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={false} optional curved />
                     ))}
                   </g>
                 )}
@@ -501,6 +546,8 @@ export function Products() {
                     />
                   )}
                 </Plate>
+                {/* Punto de salida de los haces, en el canto de la capa 1 */}
+                {product && <Port key={`p-${product.id}`} x={TILE_X[sel]} y={portY(0, TILE_X[sel])} />}
                 {PRODUCTS.map((x, i) => {
                   const on = sel === i;
                   return (
@@ -561,9 +608,13 @@ export function Products() {
                         {l.name}
                       </span>
                       {l.tag && (
-                        <span className={`mt-1 flex items-center gap-1 text-[11px] font-medium transition-colors duration-300 sm:text-xs lg:text-[13px] ${on ? "text-white" : "text-accent"}`}>
+                        <span className="mt-1.5 inline-flex items-center gap-1 rounded-[4px] bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-ink sm:px-2 sm:py-1 sm:text-xs lg:text-[13px]">
                           <Sparkles aria-hidden className="size-3 shrink-0 lg:size-3.5" />
-                          {l.tag}
+                          {/* En pantallas chicas la columna es angosta: va solo la primera palabra. */}
+                          <span className="whitespace-nowrap">
+                            {l.tag.split(" ")[0]}
+                            <span className="max-sm:sr-only"> {l.tag.split(" ").slice(1).join(" ")}</span>
+                          </span>
                         </span>
                       )}
                     </button>
@@ -575,6 +626,14 @@ export function Products() {
                 <span className="block text-[11px] font-medium text-on-dark-muted sm:text-xs lg:text-[13px]">Capa 1</span>
                 <span className="block text-sm font-semibold leading-tight text-on-dark sm:text-base lg:text-[17px]">Productos</span>
               </div>
+              {/* Rótulo del emblema de IA */}
+              <span
+                aria-hidden
+                style={pct(CX + 40, LAYER_Y[1] + AI_AT - 10)}
+                className="pointer-events-none absolute text-xs font-semibold text-white sm:text-sm lg:text-base"
+              >
+                IA
+              </span>
               {/* Nodos de la plataforma y conexiones. En pantallas chicas los de la plataforma se alternan en dos alturas. */}
               {[STAGES_SHORT, OUTSIDE_SHORT].map((names, k) =>
                 names.map((n, i) => (
@@ -642,19 +701,24 @@ export function Products() {
                 </div>
               </dl>
             )}
+            {layer?.highlight && (
+              <div className="mt-6 flex items-center gap-4 rounded-[4px] border border-accent/50 bg-accent/10 p-4">
+                <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-[4px] bg-accent text-ink">
+                  <Sparkles className="size-5" />
+                </span>
+                <div>
+                  <p className="text-lg font-semibold leading-tight">{layer.highlight.title}</p>
+                  <p className="mt-0.5 text-[15px] text-on-dark">{layer.highlight.note}</p>
+                </div>
+              </div>
+            )}
             {layer && (
-              <ul className="mt-8 grid sm:grid-cols-2 sm:gap-x-10" aria-label={layer.listTitle}>
+              <ul className="mt-6 grid sm:grid-cols-2 sm:gap-x-10 [&>li:last-child]:border-b sm:[&>li:nth-last-child(2):nth-child(odd)]:border-b" aria-label={layer.listTitle}>
                 {layer.items.map((x, i) => (
                   <li key={x} className="flex items-baseline gap-4 border-t border-white/15 py-3.5 text-lg font-semibold">
                     <span aria-hidden className="w-5 text-sm font-medium tabular-nums text-on-dark-muted">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    {x}
-                  </li>
-                ))}
-                {layer.extra.map((x) => (
-                  <li key={x} className="flex items-baseline gap-4 border-t border-white/15 py-3.5 text-lg font-semibold last:border-b sm:col-span-2">
-                    <span aria-hidden className="w-5 text-sm font-medium text-accent">+</span>
                     {x}
                   </li>
                 ))}
