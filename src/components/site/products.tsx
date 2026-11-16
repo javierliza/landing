@@ -20,8 +20,6 @@ const PRODUCTS: {
   stages: number[];
   /** Etapas a las que puede vincularse o no, según el caso (índices de STAGES). Se dibujan con trazo punteado. */
   optionalStages?: number[];
-  /** Producto con funciones propias, que no responde al circuito de la plataforma: su mosaico es un bloque más alto. */
-  standalone?: boolean;
   /** Conexiones externas con las que se vincula (índices de OUTSIDE), además de las etapas. */
   conns?: number[];
   /** Ruta de la captura (por ejemplo "/products/leannec.png"). Sin valor se muestra el espacio reservado. */
@@ -65,9 +63,7 @@ const PRODUCTS: {
     cta: "Consultar por Onco-Office",
     href: "#contacto",
     external: false,
-    // Producto con cuerpo propio (mosaico más alto). Se vincula con todos los nodos de la plataforma y con todas
-    // las conexiones (confirmado por Proel).
-    standalone: true,
+    // Se vincula con todos los nodos de la plataforma y con todas las conexiones (confirmado por Proel).
     stages: [0, 1, 2, 3, 4],
     conns: [0, 1, 2, 3, 4],
   },
@@ -552,7 +548,7 @@ export function Products() {
                   const on = sel === i;
                   return (
                     <g key={x.id} style={{ transform: `translateY(${on ? -16 : 0}px)`, transition: "transform .5s cubic-bezier(.2,.7,.2,1)" }}>
-                      <Plate x={TILE_X[i]} y={LAYER_Y[0]} half={TILE_HALF} rx={TILE_HALF * 0.24} t={x.standalone ? 13 : 6} tone={on ? "activo" : "mosaico"} edge={on ? "stroke-white/80" : undefined}>
+                      <Plate x={TILE_X[i]} y={LAYER_Y[0]} half={TILE_HALF} rx={TILE_HALF * 0.24} t={6} tone={on ? "activo" : "mosaico"} edge={on ? "stroke-white/80" : undefined}>
                         <g transform={`rotate(-45) scale(${TILE_HALF / 25})`} className={on ? "fill-ink text-ink" : "fill-white/60 text-white/60"}>
                           {GLYPHS[x.id]}
                         </g>
