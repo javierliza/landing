@@ -12,7 +12,7 @@ const publicSans = Public_Sans({
 export const metadata: Metadata = {
   title: "Proel Medical Technologies | Transformación digital en el cuidado de la salud",
   description:
-    "Plataformas que interconectan a los actores del sector salud: Leannec, RP Speciality y TurboSurge. Gestión de tratamientos de alto costo, trazabilidad ANMAT y automatización en Surge.",
+    "Plataformas que interconectan a los actores del sector salud: Leannec, RP Speciality, TurboSurge y Onco-Office. Gestión de tratamientos de alto costo, trazabilidad ANMAT, automatización en Surge y oncología.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -6,7 +6,7 @@ import { ChapterScrubber } from "@/components/ruixen/chapter-scrubber";
 const CHAPTERS = [
   { id: "top", title: "Inicio", description: "Gestionamos tratamientos médicos de punta a punta." },
   { id: "nosotros", title: "Nosotros", description: "Quiénes somos y nuestra trayectoria desde 2009." },
-  { id: "productos", title: "Productos", description: "RP Speciality, Leannec y TurboSurge sobre una misma plataforma." },
+  { id: "productos", title: "Productos", description: "RP Speciality, Leannec, TurboSurge y Onco-Office sobre una misma plataforma." },
   { id: "clientes", title: "Clientes", description: "Testimonios y organizaciones que confían en Proel." },
   { id: "contacto", title: "Contacto", description: "Pedí una demo o escribinos." },
 ];

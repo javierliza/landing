@@ -109,10 +109,15 @@ h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
 }
 /* Vista por capas (Productos): tonos de las placas, derivados de la paleta activa */
 .capas {
-  --p-vidrio-a: color-mix(in srgb, var(--color-ink) 76%, white);
-  --p-vidrio-b: color-mix(in srgb, var(--color-ink) 90%, white);
-  --p-vidrio-izq: color-mix(in srgb, var(--color-ink) 94%, white);
-  --p-vidrio-der: color-mix(in srgb, var(--color-ink) 84%, white);
+  --p-vidrio-a: color-mix(in srgb, var(--color-ink) 72%, white);
+  --p-vidrio-b: color-mix(in srgb, var(--color-ink) 88%, white);
+  --p-vidrio-izq: color-mix(in srgb, var(--color-ink) 93%, white);
+  --p-vidrio-der: color-mix(in srgb, var(--color-ink) 82%, white);
+  /* Capa de abajo: un poco más oscura, para que la pila tenga profundidad */
+  --p-base-a: color-mix(in srgb, var(--color-ink) 82%, white);
+  --p-base-b: color-mix(in srgb, var(--color-ink) 94%, white);
+  --p-base-izq: color-mix(in srgb, var(--color-ink) 97%, white);
+  --p-base-der: color-mix(in srgb, var(--color-ink) 89%, white);
   --p-plataforma-izq: color-mix(in srgb, var(--color-primary-dark) 60%, var(--color-ink));
   --p-plataforma-der: var(--color-primary-dark);
   --p-mosaico-a: color-mix(in srgb, var(--color-ink) 58%, white);

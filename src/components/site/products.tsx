@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { Container, Label, LINKS } from "./brand";
 
-/** Un producto nuevo = un objeto más en este arreglo (una columna más sobre la plataforma). */
+/** Un producto nuevo = un objeto más en este arreglo (un mosaico más en la capa de productos) y su dibujo en GLYPHS. */
 const PRODUCTS: {
   id: string;
   name: string;
@@ -16,8 +16,12 @@ const PRODUCTS: {
   cta: string;
   href: string;
   external: boolean;
-  /** Etapas de la plataforma que cubre (índices de STAGES). A confirmar con Proel. */
+  /** Nodos de la plataforma con los que se vincula (índices de STAGES). */
   stages: number[];
+  /** Etapas a las que puede vincularse o no, según el caso (índices de STAGES). Se dibujan con trazo punteado. */
+  optionalStages?: number[];
+  /** Producto con funciones propias, que no responde al circuito de la plataforma: su mosaico es un bloque más alto. */
+  standalone?: boolean;
   /** Conexiones externas con las que se vincula (índices de OUTSIDE), además de las etapas. */
   conns?: number[];
   /** Ruta de la captura (por ejemplo "/products/leannec.png"). Sin valor se muestra el espacio reservado. */
@@ -34,7 +38,7 @@ const PRODUCTS: {
     cta: "Visitar RP Speciality",
     href: LINKS.rp,
     external: true,
-    stages: [0],
+    stages: [1], // Receta
     conns: [0], // Validador
   },
   {
@@ -48,8 +52,24 @@ const PRODUCTS: {
     cta: "Visitar Leannec",
     href: LINKS.leannec,
     external: true,
-    stages: [1, 2],
+    stages: [2, 3], // Auditoría, Dispensa
     conns: [1, 2, 3], // ANMAT, SSS, Sistemas del cliente
+  },
+  {
+    id: "onco",
+    name: "Onco-Office",
+    audience: "Para médicos y pacientes oncológicos",
+    description: "Ecosistema que vincula a médico y paciente para la gestión de tratamientos oncológicos.",
+    includesTitle: "",
+    includes: [],
+    cta: "Consultar por Onco-Office",
+    href: "#contacto",
+    external: false,
+    // Producto con cuerpo propio (mosaico más alto). Se vincula con todos los nodos de la plataforma y con todas
+    // las conexiones (confirmado por Proel).
+    standalone: true,
+    stages: [0, 1, 2, 3, 4],
+    conns: [0, 1, 2, 3, 4],
   },
   {
     id: "turbosurge",
@@ -61,7 +81,7 @@ const PRODUCTS: {
     cta: "Consultar por TurboSurge",
     href: "#contacto",
     external: false,
-    stages: [3],
+    stages: [4], // Recupero
     conns: [4], // Surge
   },
 ];
@@ -81,7 +101,10 @@ function ProductLink({ p }: { p: Cta }) {
   );
 }
 
-const STAGES = ["Receta", "Auditoría", "Dispensa", "Recupero"];
+/** Nodos de la plataforma, todos sobre una misma línea y en este orden. */
+const STAGES = ["Historia clínica digital", "Receta", "Auditoría", "Dispensa", "Recupero"];
+/** Nombres cortos para dibujar sobre la capa (el nombre completo va en el detalle). */
+const STAGES_SHORT = ["Historia clínica", "Receta", "Auditoría", "Dispensa", "Recupero"];
 const OUTSIDE = ["Validador", "ANMAT", "Superintendencia de Servicios de Salud", "Sistemas del cliente", "Surge"];
 /** Nombres cortos para dibujar sobre la capa de conexiones (el nombre completo va en el detalle). */
 const OUTSIDE_SHORT = ["Validador", "ANMAT", "SSS", "Clientes", "Surge"];
@@ -91,9 +114,13 @@ const LAYERS = [
   {
     audience: "La base común",
     name: "Plataforma Proel",
-    description: "Una misma base tecnológica sostiene todo el circuito de gestión, de la receta al recupero.",
-    listTitle: "Etapas de la gestión",
+    description: "Una misma base tecnológica, con inteligencia artificial integrada, sostiene todo el circuito de gestión, de la receta al recupero.",
+    listTitle: "Recorrido de la plataforma",
     items: STAGES,
+    // Capacidad de toda la plataforma, no un nodo del recorrido: se lista aparte.
+    extra: ["Integración de IA"],
+    // Rótulo que acompaña al nombre de la capa en la ilustración.
+    tag: "IA integrada",
   },
   {
     audience: "El entorno",
@@ -101,20 +128,33 @@ const LAYERS = [
     description: "La plataforma se integra con los organismos y sistemas con los que trabaja el sector.",
     listTitle: "Se integra con",
     items: OUTSIDE,
+    extra: [] as string[],
+    tag: undefined as string | undefined,
   },
 ];
+/** Para el título de la sección, que nombra cuántos productos hay. */
+const COUNT_WORD: Record<number, string> = { 2: "Dos", 3: "Tres", 4: "Cuatro", 5: "Cinco", 6: "Seis" };
 const DEMO: Cta = { cta: "Pedí una demo", href: "#contacto", external: false };
 
 /* ── Geometría de la ilustración (isométrica 2:1) ── */
 const W = 560;
-const H = 520;
-const CX = 372; // eje de las capas (desplazado a la derecha para dejar lugar a los rótulos)
-const HALF = 90; // medio lado de cada capa, en su propio plano
+const H = 560;
+const CX = 364; // eje de las capas (desplazado a la derecha para dejar lugar a los rótulos)
+const HALF = 96; // medio lado de cada capa, en su propio plano
 const THICK = 14;
-const LAYER_Y = [100, 250, 400]; // productos, plataforma, conexiones
-const TILE_X = [260, 372, 484]; // un mosaico por producto
-const NODE_X = [243, 329, 415, 501]; // etapas de la plataforma
-const CONN_X = [232, 302, 372, 442, 512]; // conexiones
+const LAYER_Y = [104, 266, 428]; // productos, plataforma, conexiones
+const LABEL_W = 132; // ancho de la columna de rótulos de capa
+// Un mosaico por producto, en fila sobre la capa 1. Hasta tres van grandes; con más se achican para entrar.
+const N = PRODUCTS.length;
+const TILE_GAP = N <= 3 ? 116 : Math.min(90, 310 / (N - 1));
+const TILE_HALF = N <= 3 ? 26 : Math.min(21, TILE_GAP * 0.235);
+const TILE_X = PRODUCTS.map((_, i) => CX + (i - (N - 1) / 2) * TILE_GAP);
+/** Índices de selección: primero los productos y después las otras dos capas. */
+const SEL_PLATFORM = N;
+const SEL_CONNS = N + 1;
+const NODE_GAP = 68;
+const NODE_X = STAGES.map((_, i) => CX + (i - (STAGES.length - 1) / 2) * NODE_GAP); // nodos de la plataforma
+const CONN_X = OUTSIDE.map((_, i) => CX + (i - (OUTSIDE.length - 1) / 2) * NODE_GAP); // conexiones
 const pct = (x: number, y: number) => ({ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` });
 /** Lleva el plano de una capa (u, v) a la pantalla: todo lo dibujado adentro queda "acostado" sobre la capa. */
 const ISO = "matrix(1 0.5 -1 0.5 0 0)";
@@ -126,12 +166,13 @@ const onPlane = (dx: number) => ({ u: dx / 2, v: -dx / 2 });
  * que la usa (sus etapas ya están unidas entre sí sobre la plataforma) o, si ninguno la usa, la etapa más cercana.
  */
 function connOrigin(c: number) {
-  const owner = PRODUCTS.find((x) => x.conns?.includes(c));
+  // Si la usan varios productos, manda el más específico (el que cubre menos nodos).
+  const owner = PRODUCTS.filter((x) => x.conns?.includes(c)).sort((a, b) => a.stages.length - b.stages.length)[0];
   if (owner) return owner.stages.reduce((sum, n) => sum + NODE_X[n], 0) / owner.stages.length;
   return NODE_X.reduce((a, b) => (Math.abs(b - CONN_X[c]) < Math.abs(a - CONN_X[c]) ? b : a));
 }
 
-type Tone = "vidrio" | "plataforma" | "mosaico" | "activo";
+type Tone = "vidrio" | "base" | "plataforma" | "mosaico" | "activo";
 
 /** Placa isométrica con espesor y esquinas redondeadas. Los hijos se dibujan sobre su cara superior. */
 function Plate({
@@ -150,7 +191,8 @@ function Plate({
   rx: number;
   t: number;
   tone: Tone;
-  edge: string;
+  /** Clase de trazo del borde. Sin valor, el borde lleva luz: claro al fondo y tenue al frente. */
+  edge?: string;
   children?: React.ReactNode;
 }) {
   const xr = 2 * half - rx * (2 - Math.SQRT2); // extremo horizontal de la placa (por el redondeo)
@@ -165,35 +207,121 @@ function Plate({
     <g transform={`translate(${x} ${y})`}>
       {sides(`var(--p-${tone}-izq)`)}
       <g clipPath="url(#capa-mitad-der)">{sides(`var(--p-${tone}-der)`)}</g>
-      <rect {...face} transform={ISO} fill={`url(#capa-${tone})`} className={edge} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <rect {...face} transform={ISO} fill={`url(#capa-${tone})`} className={edge} stroke={edge ? undefined : "url(#capa-borde)"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <g transform={ISO}>{children}</g>
     </g>
   );
 }
 
 /**
- * Dibujo de cada mosaico: receta, verificación y automatización. Van sobre la placa pero girados 45° en su plano,
+ * Dibujo de cada mosaico, por id de producto: receta, verificación, automatización y vínculo médico-paciente. Van sobre la placa pero girados 45° en su plano,
  * así quedan derechos hacia quien mira (acostados, sin torcerse).
  */
-const GLYPHS = [
-  <g key="rp">
-    <rect x={-12} y={-10} width={24} height={4} rx={2} />
-    <rect x={-12} y={-2} width={24} height={4} rx={2} />
-    <rect x={-12} y={6} width={14} height={4} rx={2} />
-  </g>,
-  <path key="leannec" d="M-11 0 L-4 8 L11 -8" fill="none" stroke="currentColor" strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" />,
-  <path key="turbo" d="M3 -14 L-9 2 H-1 L-3 14 L9 -2 H1 Z" />,
-];
+const GLYPHS: Record<string, React.ReactNode> = {
+  rp: (
+    <g>
+      <rect x={-12} y={-10} width={24} height={4} rx={2} />
+      <rect x={-12} y={-2} width={24} height={4} rx={2} />
+      <rect x={-12} y={6} width={14} height={4} rx={2} />
+    </g>
+  ),
+  leannec: <path d="M-11 0 L-4 8 L11 -8" fill="none" stroke="currentColor" strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" />,
+  turbosurge: <path d="M3 -14 L-9 2 H-1 L-3 14 L9 -2 H1 Z" />,
+  onco: (
+    <g>
+      <circle cx={-8} cy={0} r={5.5} />
+      <circle cx={8} cy={0} r={5.5} />
+      <rect x={-8} y={-1.75} width={16} height={3.5} />
+    </g>
+  ),
+};
+
+/**
+ * Vista previa dibujada para el marco de captura, mientras no haya una captura real: un esquema abstracto de pantalla
+ * (barra lateral, indicadores y filas), sin datos. Se reemplaza sola al cargar `image` en PRODUCTS.
+ */
+function Wireframe({ name }: { name: string }) {
+  return (
+    <div role="img" aria-label={`Vista previa ilustrativa de ${name}`} className="flex min-h-0 flex-1 gap-4 p-4 md:p-5">
+      <div aria-hidden className="hidden w-[22%] shrink-0 flex-col gap-2.5 sm:flex">
+        <span className="h-2 w-3/4 bg-accent/70" />
+        {[100, 80, 90, 65, 85].map((w, i) => (
+          <span key={i} className="h-1.5 bg-white/12" style={{ width: `${w}%` }} />
+        ))}
+      </div>
+      <div aria-hidden className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <span className="h-2.5 w-2/5 bg-white/25" />
+          <span className="h-5 w-16 rounded-[3px] bg-white/10" />
+        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          {[60, 45, 70].map((w, i) => (
+            <div key={i} className="rounded-[4px] border border-white/10 bg-white/[0.04] p-2.5">
+              <span className="block h-1.5 w-1/2 bg-white/15" />
+              <span className={`mt-2 block h-2.5 ${i === 0 ? "bg-accent/80" : "bg-white/30"}`} style={{ width: `${w}%` }} />
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-1 flex-col justify-start gap-2.5 rounded-[4px] border border-white/10 bg-white/[0.03] p-2.5">
+          {[92, 78, 86, 70, 82, 64].map((w, i) => (
+            <div key={i} className="flex items-center gap-2.5">
+              <span className={`size-1.5 shrink-0 ${i % 3 === 0 ? "bg-accent" : "bg-white/25"}`} />
+              <span className="h-1.5 bg-white/12" style={{ width: `${w}%` }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** Línea entre capas; si está activa lleva un pulso de luz que la recorre. */
-function Beam({ x1, y1, x2, y2, on, pulse, delay = 0 }: { x1: number; y1: number; x2: number; y2: number; on: boolean; pulse: boolean; delay?: number }) {
+function Beam({
+  x1,
+  y1,
+  x2,
+  y2,
+  on,
+  pulse,
+  delay = 0,
+  optional = false,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  on: boolean;
+  pulse: boolean;
+  delay?: number;
+  /** Vínculo opcional: trazo punteado, más tenue y sin pulso. */
+  optional?: boolean;
+}) {
+  const lit = on && !optional;
+  const path = `M${x1} ${y1} L${x2} ${y2}`;
   return (
     <>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} className={on ? "stroke-accent" : "stroke-white/20"} strokeWidth={on ? 1.5 : 1} vectorEffect="non-scaling-stroke" />
-      {on && pulse && (
-        <circle r={2.5} className="fill-white">
-          <animateMotion dur="1.6s" begin={`${delay}s`} repeatCount="indefinite" path={`M${x1} ${y1} L${x2} ${y2}`} />
-        </circle>
+      {/* Resplandor bajo el haz activo */}
+      {lit && <line x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-accent" strokeWidth={5} opacity={0.4} filter="url(#capa-brillo)" />}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        className={optional ? "stroke-accent/70" : on ? "stroke-accent" : "stroke-white/20"}
+        strokeWidth={optional ? 1.25 : on ? 1.5 : 1}
+        strokeDasharray={optional ? "2 5" : undefined}
+        strokeLinecap={optional ? "round" : undefined}
+        vectorEffect="non-scaling-stroke"
+      />
+      {lit && pulse && (
+        <>
+          <circle r={5.5} className="fill-accent" opacity={0.35}>
+            <animateMotion dur="1.6s" begin={`${delay}s`} repeatCount="indefinite" path={path} />
+          </circle>
+          <circle r={2.2} className="fill-white">
+            <animateMotion dur="1.6s" begin={`${delay}s`} repeatCount="indefinite" path={path} />
+          </circle>
+        </>
       )}
     </>
   );
@@ -206,13 +334,14 @@ function Beam({ x1, y1, x2, y2, on, pulse, delay = 0 }: { x1: number; y1: number
  */
 export function Products() {
   const reduced = useReducedMotion();
-  // 0-2: producto · 3: plataforma · 4: conexiones
+  // 0..N-1: producto · SEL_PLATFORM: plataforma · SEL_CONNS: conexiones
   const [sel, setSel] = useState(1);
-  const product = sel < 3 ? PRODUCTS[sel] : null;
-  const layer = sel >= 3 ? LAYERS[sel - 3] : null;
-  const activeLayer = sel < 3 ? 0 : sel - 2; // capa resaltada en la ilustración
-  const litStages = product ? product.stages : sel === 3 ? [0, 1, 2, 3] : [];
-  const litConn = sel === 4 ? OUTSIDE.map((_, i) => i) : (product?.conns ?? []);
+  const product = sel < N ? PRODUCTS[sel] : null;
+  const layer = sel >= N ? LAYERS[sel - N] : null;
+  const activeLayer = sel < N ? 0 : sel - N + 1; // capa resaltada en la ilustración
+  const litStages = product ? product.stages : sel === SEL_PLATFORM ? STAGES.map((_, i) => i) : [];
+  const optStages = product?.optionalStages ?? [];
+  const litConn = sel === SEL_CONNS ? OUTSIDE.map((_, i) => i) : (product?.conns ?? []);
 
   const tab = (i: number, on: boolean) => ({
     role: "tab" as const,
@@ -228,11 +357,11 @@ export function Products() {
           <div className="lg:col-span-7">
             <Label dark>Productos</Label>
             <h2 className="reveal mt-6 max-w-[18ch] text-balance text-[34px] leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl lg:text-[56px]">
-              Tres productos, una sola plataforma
+              {COUNT_WORD[N] ?? "Nuestros"} productos, una sola plataforma
             </h2>
           </div>
           <p className="reveal max-w-md text-lg leading-relaxed text-on-dark lg:col-span-5">
-            Cada producto resuelve una etapa de la gestión. Todos se apoyan en una misma base tecnológica y se
+            Cada producto resuelve una parte de la gestión, y algunos suman funciones propias de una especialidad. Todos se apoyan en una misma base tecnológica y se
             conectan con los organismos y sistemas del sector.
           </p>
         </div>
@@ -240,7 +369,7 @@ export function Products() {
         <div className="mt-12 grid gap-10 md:mt-16 lg:grid-cols-12 lg:items-stretch lg:gap-x-10">
           {/* Vista por capas */}
           <div className="lg:col-span-7">
-            <div className="relative mx-auto w-full max-w-[680px] lg:mx-0" style={{ aspectRatio: `${W} / ${H}` }}>
+            <div className="reveal relative mx-auto w-full max-w-[680px] lg:mx-0" style={{ aspectRatio: `${W} / ${H}` }}>
               {/* Luz quieta detrás de la pila */}
               <div aria-hidden className="bg-glow-stack pointer-events-none absolute -inset-[14%]" />
               <svg viewBox={`0 0 ${W} ${H}`} aria-hidden className="capas absolute inset-0 size-full overflow-visible">
@@ -249,6 +378,7 @@ export function Products() {
                   {(
                     [
                       ["vidrio", "var(--p-vidrio-a)", "var(--p-vidrio-b)"],
+                      ["base", "var(--p-base-a)", "var(--p-base-b)"],
                       ["plataforma", "var(--color-primary-light)", "var(--color-primary-dark)"],
                       ["mosaico", "var(--p-mosaico-a)", "var(--p-mosaico-b)"],
                       ["activo", "var(--color-accent)", "var(--color-primary-light)"],
@@ -259,6 +389,15 @@ export function Products() {
                       <stop offset="1" style={{ stopColor: to }} />
                     </linearGradient>
                   ))}
+                  {/* Borde de las placas: más claro en las aristas del fondo, tenue al frente */}
+                  <linearGradient id="capa-borde" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#fff" stopOpacity={0.6} />
+                    <stop offset="0.55" stopColor="#fff" stopOpacity={0.14} />
+                    <stop offset="1" stopColor="#fff" stopOpacity={0.34} />
+                  </linearGradient>
+                  <filter id="capa-brillo" filterUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+                    <feGaussianBlur stdDeviation="2.4" />
+                  </filter>
                   <pattern id="capa-puntos" width="15" height="15" patternUnits="userSpaceOnUse">
                     <circle cx="7.5" cy="7.5" r="0.9" className="fill-white" />
                   </pattern>
@@ -271,10 +410,10 @@ export function Products() {
                 </defs>
 
                 {/* Resplandor bajo la pila */}
-                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[2] + 52}) ${ISO}`} className="fill-primary opacity-40" filter="url(#capa-difuso)" />
+                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[2] + 54}) ${ISO}`} className="fill-primary opacity-50" filter="url(#capa-difuso)" />
 
                 {/* Capa 3: conexiones */}
-                <Plate x={CX} y={LAYER_Y[2]} half={HALF} rx={12} t={THICK} tone="vidrio" edge={activeLayer === 2 ? "stroke-accent" : "stroke-white/25"}>
+                <Plate x={CX} y={LAYER_Y[2]} half={HALF} rx={12} t={THICK} tone="base" edge={activeLayer === 2 ? "stroke-accent" : undefined}>
                   <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} fill="url(#capa-puntos)" opacity={0.18} />
                   {CONN_X.map((x, n) => {
                     const { u, v } = onPlane(x - CX);
@@ -288,11 +427,11 @@ export function Products() {
                   })}
                 </Plate>
                 {/* Sombra de la plataforma y enlaces hacia las conexiones (salen por debajo de la capa 2) */}
-                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[1] + 70}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
+                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[1] + 78}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
                 {OUTSIDE.map((_, c) => {
                   // Cada conexión sale siempre del mismo punto, esté o no elegido su producto, para que la línea no
                   // cambie de inclinación al encenderse.
-                  const on = sel === 4 || !!product?.conns?.includes(c);
+                  const on = sel === SEL_CONNS || !!product?.conns?.includes(c);
                   return <Beam key={`${c}-${on ? sel : "r"}`} x1={connOrigin(c)} y1={LAYER_Y[1] + 4} x2={CONN_X[c]} y2={LAYER_Y[2] - 3} on={on} pulse={on && !reduced} delay={0.5} />;
                 })}
 
@@ -301,8 +440,8 @@ export function Products() {
                   <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} fill="url(#capa-puntos)" opacity={0.3} />
                   {(() => {
                     const a = onPlane(NODE_X[0] - CX);
-                    const b = onPlane(NODE_X[3] - CX);
-                    const lo = onPlane(NODE_X[Math.min(...litStages, 3)] - CX);
+                    const b = onPlane(NODE_X[NODE_X.length - 1] - CX);
+                    const lo = onPlane(NODE_X[Math.min(...litStages, NODE_X.length - 1)] - CX);
                     const hi = onPlane(NODE_X[Math.max(...litStages, 0)] - CX);
                     return (
                       <>
@@ -311,35 +450,51 @@ export function Products() {
                       </>
                     );
                   })()}
+                  {/* Integración de IA: es de toda la capa, no de una etapa. Se dibuja como un marco interior que
+                      recorre la placa entera, con una luz que le da la vuelta. */}
+                  <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} fill="none" className={sel === SEL_PLATFORM ? "stroke-white/80" : "stroke-white/35"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                  {!reduced && (
+                    <rect x={-HALF + 8} y={-HALF + 8} width={2 * HALF - 16} height={2 * HALF - 16} rx={7} pathLength={1} fill="none" className="stroke-white" strokeWidth={2} strokeLinecap="round" strokeDasharray="0.1 0.9">
+                      <animate attributeName="stroke-dashoffset" from={1} to={0} dur="7s" repeatCount="indefinite" />
+                    </rect>
+                  )}
                   {NODE_X.map((x, n) => {
                     const { u, v } = onPlane(x - CX);
                     const lit = litStages.includes(n);
+                    const opt = optStages.includes(n); // vínculo opcional: solo el contorno, punteado
                     return (
                       <g key={n}>
-                        <rect x={u - 9} y={v - 9} width={18} height={18} rx={4} fill="none" className={`transition-[stroke] duration-500 ${lit ? "stroke-white/70" : "stroke-white/0"}`} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                        <rect x={u - 9} y={v - 9} width={18} height={18} rx={4} fill="none" className={`transition-[stroke] duration-500 ${lit || opt ? "stroke-white/70" : "stroke-white/0"}`} strokeWidth={1} strokeDasharray={opt ? "2 3" : undefined} vectorEffect="non-scaling-stroke" />
                         <rect x={u - 5} y={v - 5} width={10} height={10} rx={2} className={`transition-[fill] duration-500 ${lit ? "fill-white" : "fill-white/40"}`} />
                       </g>
                     );
                   })}
                 </Plate>
 
-                {/* Sombra de la capa de productos y haces hacia las etapas (salen por debajo de la capa 1) */}
-                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[0] + 70}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
-                {product &&
-                  product.stages.map((n, k) => (
-                    <Beam key={`${product.id}-${n}`} x1={TILE_X[sel]} y1={LAYER_Y[0] + 10} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={!reduced} delay={k * 0.3} />
-                  ))}
+                {/* Sombra de la capa de productos y haces del producto elegido hacia la capa 2: salen directo del mosaico
+                    y asoman por debajo de la capa 1. Continuos a las etapas y módulos vinculados; punteados a las opcionales. */}
+                <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} rx={12} transform={`translate(${CX} ${LAYER_Y[0] + 78}) scale(0.92) ${ISO}`} className="fill-black opacity-30" filter="url(#capa-difuso)" />
+                {product && (
+                  <g key={product.id}>
+                    {product.stages.map((n, k) => (
+                      <Beam key={n} x1={TILE_X[sel]} y1={LAYER_Y[0] + 10} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={!reduced} delay={k * 0.3} />
+                    ))}
+                    {optStages.map((n) => (
+                      <Beam key={`o${n}`} x1={TILE_X[sel]} y1={LAYER_Y[0] + 10} x2={NODE_X[n]} y2={LAYER_Y[1] - 3} on pulse={false} optional />
+                    ))}
+                  </g>
+                )}
 
                 {/* Capa 1: productos */}
-                <Plate x={CX} y={LAYER_Y[0]} half={HALF} rx={12} t={THICK} tone="vidrio" edge={activeLayer === 0 ? "stroke-accent" : "stroke-white/25"}>
+                <Plate x={CX} y={LAYER_Y[0]} half={HALF} rx={12} t={THICK} tone="vidrio" edge={activeLayer === 0 ? "stroke-accent" : undefined}>
                   <rect x={-HALF} y={-HALF} width={2 * HALF} height={2 * HALF} fill="url(#capa-puntos)" opacity={0.18} />
                   {product && (
                     <rect
                       key={product.id}
-                      x={onPlane(TILE_X[sel] - CX).u - 25}
-                      y={onPlane(TILE_X[sel] - CX).v - 25}
-                      width={50}
-                      height={50}
+                      x={onPlane(TILE_X[sel] - CX).u - TILE_HALF}
+                      y={onPlane(TILE_X[sel] - CX).v - TILE_HALF}
+                      width={TILE_HALF * 2}
+                      height={TILE_HALF * 2}
                       rx={6}
                       className="rise fill-accent opacity-50"
                       filter="url(#capa-difuso)"
@@ -350,9 +505,9 @@ export function Products() {
                   const on = sel === i;
                   return (
                     <g key={x.id} style={{ transform: `translateY(${on ? -16 : 0}px)`, transition: "transform .5s cubic-bezier(.2,.7,.2,1)" }}>
-                      <Plate x={TILE_X[i]} y={LAYER_Y[0]} half={25} rx={6} t={6} tone={on ? "activo" : "mosaico"} edge={on ? "stroke-white/70" : "stroke-white/30"}>
-                        <g transform="rotate(-45)" className={on ? "fill-ink text-ink" : "fill-white/60 text-white/60"}>
-                          {GLYPHS[i]}
+                      <Plate x={TILE_X[i]} y={LAYER_Y[0]} half={TILE_HALF} rx={TILE_HALF * 0.24} t={x.standalone ? 13 : 6} tone={on ? "activo" : "mosaico"} edge={on ? "stroke-white/80" : undefined}>
+                        <g transform={`rotate(-45) scale(${TILE_HALF / 25})`} className={on ? "fill-ink text-ink" : "fill-white/60 text-white/60"}>
+                          {GLYPHS[x.id]}
                         </g>
                       </Plate>
                     </g>
@@ -362,8 +517,8 @@ export function Products() {
                 {/* Guías de los rótulos de capa */}
                 {LAYER_Y.map((cy, i) => (
                   <g key={i}>
-                    <line x1={150} y1={cy} x2={CX - 2 * HALF - 2} y2={cy} className={activeLayer === i ? "stroke-accent" : "stroke-white/25"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
-                    <circle cx={150} cy={cy} r={2.5} className={activeLayer === i ? "fill-accent" : "fill-white/40"} />
+                    <line x1={LABEL_W + 6} y1={cy} x2={CX - 2 * HALF - 4} y2={cy} className={activeLayer === i ? "stroke-accent" : "stroke-white/25"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                    <circle cx={LABEL_W + 6} cy={cy} r={2.5} className={activeLayer === i ? "fill-accent" : "fill-white/40"} />
                   </g>
                 ))}
               </svg>
@@ -376,49 +531,59 @@ export function Products() {
                     type="button"
                     {...tab(i, sel === i)}
                     onMouseEnter={() => setSel(i)}
-                    style={{ ...pct(TILE_X[i], 28), width: `${(112 / W) * 100}%`, height: `${(112 / H) * 100}%` }}
-                    className="pointer-events-auto absolute flex -translate-x-1/2 items-start justify-center rounded-[4px] outline-offset-2"
+                    style={{ ...pct(TILE_X[i], 6), width: `${(TILE_GAP / W) * 100}%`, height: `${(134 / H) * 100}%` }}
+                    className="pointer-events-auto absolute flex -translate-x-1/2 flex-col rounded-[4px] outline-offset-2"
                   >
-                    <span
-                      className={`text-center text-[11px] font-semibold leading-tight transition-colors duration-300 sm:text-sm lg:text-[15px] ${sel === i ? "text-white" : "text-on-dark"}`}
-                    >
-                      {x.name}
+                    {/* El nombre va apoyado sobre el mosaico; si no entra en una línea, crece hacia arriba. Con más de
+                        tres productos, en pantallas chicas los nombres se alternan en dos alturas para no pisarse. */}
+                    <span className={`flex h-[36%] w-full shrink-0 items-end justify-center ${N > 3 && i % 2 === 1 ? "max-sm:pb-4" : ""}`}>
+                      <span
+                        className={`text-balance text-center text-[11px] font-semibold leading-tight transition-colors duration-300 sm:text-sm ${N > 3 ? "" : "lg:text-[15px]"} ${sel === i ? "text-white" : "text-on-dark"}`}
+                      >
+                        {x.name}
+                      </span>
                     </span>
                   </button>
                 ))}
                 {LAYERS.map((l, k) => {
-                  const i = k + 3;
+                  const i = k + N;
                   const on = sel === i;
                   return (
                     <button
                       key={l.name}
                       type="button"
                       {...tab(i, on)}
-                      style={{ ...pct(0, LAYER_Y[k + 1] - 24), width: `${(146 / W) * 100}%` }}
+                      style={{ ...pct(0, LAYER_Y[k + 1] - 24), width: `${(LABEL_W / W) * 100}%` }}
                       className="pointer-events-auto absolute rounded-[4px] text-left outline-offset-2"
                     >
                       <span className="block text-[11px] font-medium text-on-dark-muted sm:text-xs lg:text-[13px]">Capa {k + 2}</span>
                       <span className={`block text-sm font-semibold leading-tight transition-colors duration-300 sm:text-base lg:text-[17px] ${on ? "text-white" : "text-on-dark"}`}>
                         {l.name}
                       </span>
+                      {l.tag && (
+                        <span className={`mt-1 flex items-center gap-1 text-[11px] font-medium transition-colors duration-300 sm:text-xs lg:text-[13px] ${on ? "text-white" : "text-accent"}`}>
+                          <Sparkles aria-hidden className="size-3 shrink-0 lg:size-3.5" />
+                          {l.tag}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
               </div>
               {/* Rótulo de la capa de productos (sin acción propia: los productos son los mosaicos) */}
-              <div aria-hidden className="pointer-events-none absolute" style={{ ...pct(0, LAYER_Y[0] - 24), width: `${(146 / W) * 100}%` }}>
+              <div aria-hidden className="pointer-events-none absolute" style={{ ...pct(0, LAYER_Y[0] - 24), width: `${(LABEL_W / W) * 100}%` }}>
                 <span className="block text-[11px] font-medium text-on-dark-muted sm:text-xs lg:text-[13px]">Capa 1</span>
                 <span className="block text-sm font-semibold leading-tight text-on-dark sm:text-base lg:text-[17px]">Productos</span>
               </div>
-              {/* Etapas y conexiones */}
-              {[STAGES, OUTSIDE_SHORT].map((names, k) =>
+              {/* Nodos de la plataforma y conexiones. En pantallas chicas los de la plataforma se alternan en dos alturas. */}
+              {[STAGES_SHORT, OUTSIDE_SHORT].map((names, k) =>
                 names.map((n, i) => (
                   <span
                     key={`${k}-${n}`}
                     aria-hidden
-                    style={pct((k === 0 ? NODE_X : CONN_X)[i], LAYER_Y[k + 1] + 14)}
-                    className={`pointer-events-none absolute -translate-x-1/2 whitespace-nowrap text-[10px] font-medium transition-colors duration-500 sm:text-xs lg:text-[13px] ${
-                      (k === 0 ? litStages : litConn).includes(i) ? "text-white" : "text-on-dark-muted"
+                    style={{ ...pct((k === 0 ? NODE_X : CONN_X)[i], LAYER_Y[k + 1] + 14), width: `${(NODE_GAP / W) * 100}%` }}
+                    className={`pointer-events-none absolute -translate-x-1/2 text-balance text-center text-[10px] leading-tight ${k === 0 && i % 2 === 1 ? "max-sm:mt-3" : ""} font-medium transition-colors duration-500 sm:text-xs lg:text-[13px] ${
+                      (k === 0 ? litStages : litConn).includes(i) ? "text-white" : k === 0 ? (optStages.includes(i) ? "text-white/85" : "text-white/65") : "text-on-dark-muted"
                     }`}
                   >
                     {n}
@@ -430,7 +595,7 @@ export function Products() {
 
           {/* Detalle de lo elegido: panel sólido, con el mismo tratamiento que las placas. Para un producto, la captura va dentro de un marco de ventana que
               se sale por el borde inferior derecho; para completarla, cargar `image` en PRODUCTS (mientras tanto se
-              muestra un espacio reservado). */}
+              muestra una vista previa dibujada). */}
           <article
             id="capa-detalle"
             role="tabpanel"
@@ -459,6 +624,24 @@ export function Products() {
                 ))}
               </ul>
             )}
+            {product && optStages.length > 0 && (
+              <dl className="mt-6 border-t border-white/15 text-[15px]">
+                <div className="flex items-baseline justify-between gap-4 border-b border-white/15 py-3">
+                  <dt className="font-semibold text-white">{product.stages.map((n) => STAGES[n]).join(", ")}</dt>
+                  <dd className="flex items-center gap-2 text-on-dark">
+                    <span aria-hidden className="h-px w-6 bg-accent" />
+                    Vinculada
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4 border-b border-white/15 py-3">
+                  <dt className="font-semibold text-white">{optStages.map((n) => STAGES[n]).join(", ")}</dt>
+                  <dd className="flex shrink-0 items-center gap-2 text-on-dark">
+                    <span aria-hidden className="w-6 border-t border-dashed border-accent" />
+                    Opcionales
+                  </dd>
+                </div>
+              </dl>
+            )}
             {layer && (
               <ul className="mt-8 grid sm:grid-cols-2 sm:gap-x-10" aria-label={layer.listTitle}>
                 {layer.items.map((x, i) => (
@@ -466,6 +649,12 @@ export function Products() {
                     <span aria-hidden className="w-5 text-sm font-medium tabular-nums text-on-dark-muted">
                       {String(i + 1).padStart(2, "0")}
                     </span>
+                    {x}
+                  </li>
+                ))}
+                {layer.extra.map((x) => (
+                  <li key={x} className="flex items-baseline gap-4 border-t border-white/15 py-3.5 text-lg font-semibold last:border-b sm:col-span-2">
+                    <span aria-hidden className="w-5 text-sm font-medium text-accent">+</span>
                     {x}
                   </li>
                 ))}
@@ -489,9 +678,7 @@ export function Products() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={product.image} alt={`Captura de ${product.name}`} className="min-h-0 w-full flex-1 object-cover object-left-top" />
                   ) : (
-                    <div role="img" aria-label={`Espacio reservado: captura de ${product.name}`} className="grid flex-1 place-items-center">
-                      <p className="px-6 text-center text-sm font-medium text-on-dark-muted">Captura de {product.name}</p>
-                    </div>
+                    <Wireframe name={product.name} />
                   )}
                 </div>
               </div>

@@ -12,7 +12,7 @@ const MILESTONES = [
   ["2009", "Primera plataforma", "Nace la gestión online de tratamientos médicos de alto costo."],
   ["2011", "Leannec", "La plataforma se consolida como producto."],
   ["2016", "Suite completa", "Trazabilidad, compras, recupero, mobile y auditor."],
-  ["Hoy", "Ecosistema Proel", "Se suman RP Speciality y TurboSurge."],
+  ["Hoy", "Ecosistema Proel", "Se suman RP Speciality, TurboSurge y Onco-Office."],
 ];
 
 /** Cada palabra pasa de tenue a plena según el avance del scroll. */
