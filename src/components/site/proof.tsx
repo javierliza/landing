@@ -61,28 +61,28 @@ const CLIENTS: { name: string; logo?: string }[] = [
  */
 function ClientSlider() {
   return (
-    <div className="marquee group/row overflow-hidden border-y border-line [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]">
+    <div className="marquee group/row overflow-hidden border-y border-line [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
       <div className="marquee-track flex w-max">
         {[0, 1].map((dup) => (
           <ul key={dup} className="flex shrink-0 items-center" aria-hidden={dup === 1}>
             {CLIENTS.map((c) => (
-              <li key={c.name} className="flex h-20 items-center md:h-24">
+              <li key={c.name} className="flex h-16 items-center md:h-20">
                 {/* El fondo va en este mismo elemento: el logo se funde con él (multiply) y así desaparece el blanco de los JPG. */}
-                <span className="group/item flex h-full cursor-default items-center bg-bg px-7 transition-opacity duration-300 group-hover/row:opacity-30 hover:!opacity-100 md:px-10">
+                <span className="group/item flex h-full cursor-default items-center bg-bg px-6 transition-opacity duration-300 group-hover/row:opacity-30 hover:!opacity-100 md:px-8">
                   {c.logo ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={c.logo}
                       alt={c.name}
-                      className="h-9 w-auto max-w-[150px] object-contain opacity-60 mix-blend-multiply grayscale contrast-125 transition-[filter,opacity,transform] duration-300 group-hover/item:scale-110 group-hover/item:opacity-100 group-hover/item:grayscale-0 md:h-10"
+                      className="h-7 w-auto max-w-[130px] object-contain opacity-60 mix-blend-multiply grayscale contrast-125 transition-[filter,opacity,transform] duration-300 group-hover/item:scale-110 group-hover/item:opacity-100 group-hover/item:grayscale-0 md:h-8"
                     />
                   ) : (
-                    <span className="relative whitespace-nowrap text-xl font-semibold tracking-[-0.02em] text-slate transition-[color,transform] duration-300 after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 group-hover/item:scale-105 group-hover/item:text-ink group-hover/item:after:scale-x-100 md:text-2xl">
+                    <span className="relative whitespace-nowrap text-base font-semibold tracking-[-0.01em] text-slate transition-[color,transform] duration-300 after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 group-hover/item:scale-105 group-hover/item:text-ink group-hover/item:after:scale-x-100 md:text-lg">
                       {c.name}
                     </span>
                   )}
                 </span>
-                <span aria-hidden className="size-1.5 bg-line-strong" />
+                <span aria-hidden className="size-1 bg-line-strong" />
               </li>
             ))}
           </ul>
@@ -199,14 +199,14 @@ export function Clients() {
         </figure>
       </Split>
 
-      <div className="mt-16 md:mt-20">
-        <Container>
-          <div className="reveal flex flex-wrap items-end justify-between gap-4 pb-6">
-            <h3 className="text-2xl tracking-[-0.02em] sm:text-[28px]">Confían en nosotros</h3>
-          </div>
-        </Container>
-        <ClientSlider />
-      </div>
+      {/* Fila de clientes en la misma grilla que el testimonio: el rótulo en la columna de rótulos y los logos
+          alineados con los bordes de la tarjeta, como continuación del mismo bloque. */}
+      <Container className="mt-8 grid gap-y-4 md:mt-10 lg:grid-cols-12 lg:items-center lg:gap-x-10">
+        <h3 className="reveal text-sm font-medium text-gray lg:col-span-3">Confían en nosotros</h3>
+        <div className="min-w-0 lg:col-span-9">
+          <ClientSlider />
+        </div>
+      </Container>
     </section>
   );
 }
