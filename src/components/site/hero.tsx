@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { Container } from "./brand";
-import { FlowRibbon } from "./flow-ribbon";
+import { DotRelief } from "./dot-relief";
 
 const TITLE = "Gestionamos tratamientos médicos de punta a punta";
 const EASE = [0.2, 0.7, 0.2, 1] as const;
@@ -15,13 +15,9 @@ export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden bg-ink pt-[68px] text-white">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* Cinta de líneas de flujo. En escritorio ocupa todo el fondo y se apaga hacia la izquierda y hacia abajo,
-            para no pasar por detrás del texto; en móvil se encuadra arriba a la derecha, sobre el titular. */}
-        <FlowRibbon
-          id="hero"
-          animated
-          className="hero-art absolute right-0 top-0 h-[68%] w-auto max-w-none md:inset-0 md:size-full"
-        />
+        {/* Relieve de puntos. En escritorio ocupa todo el fondo y se apaga hacia la izquierda y hacia abajo, para no
+            pasar por detrás del texto; en móvil se encuadra arriba a la derecha, sobre el titular. */}
+        <DotRelief animated className="hero-art absolute inset-0 size-full" />
       </div>
 
       <Container className="relative flex min-h-[calc(100svh-68px)] flex-col justify-end pb-10 pt-16 md:pb-14">

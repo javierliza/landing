@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { AnimatedLink } from "@/components/ruixen/animated-link";
 import { ChevronDown } from "lucide-react";
 import { ACCESS, Container, Label, LINKS, Wordmark } from "./brand";
-import { FlowRibbon } from "./flow-ribbon";
+import { DotRelief } from "./dot-relief";
 
 const FIELD =
   "mt-1.5 block w-full rounded-[4px] border border-white/25 bg-white/10 px-3.5 py-3 text-base text-white placeholder:text-white/60 transition-colors hover:border-white/45 focus:border-white focus:bg-white/15 focus:outline-2 focus:outline-offset-0 focus:outline-white [&>option]:text-ink";
@@ -94,9 +94,9 @@ export function Contact() {
       id="contacto"
       className="relative overflow-hidden bg-primary-dark py-16 text-white md:py-24"
     >
-      {/* La misma cinta de líneas de la portada, invertida: nace arriba a la izquierda y se abre hacia abajo a la
-          derecha, por detrás del formulario. Quieta y tenue, para cerrar la página con el arte con que abre. */}
-      <FlowRibbon id="contacto" className="pointer-events-none absolute inset-0 size-full -scale-y-100 opacity-70 [mask-image:linear-gradient(to_right,transparent_30%,#000_75%)]" />
+      {/* El mismo relieve de puntos de la portada, invertido: nace arriba a la izquierda y se abre hacia abajo a la
+          derecha, por detrás del formulario. Quieto y tenue, para cerrar la página con el arte con que abre. */}
+      <DotRelief className="pointer-events-none absolute inset-0 size-full -scale-y-100 opacity-70 [mask-image:linear-gradient(to_right,transparent_30%,#000_75%)]" />
       <Container className="relative grid gap-12 lg:grid-cols-12 lg:gap-x-10">
         <div className="lg:col-span-6">
           <Label dark>Contacto</Label>
