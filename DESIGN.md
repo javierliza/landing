@@ -16,7 +16,7 @@ Estados (no cambian con la paleta): verde #1B6B49 sobre #DCEFE6, ámbar #8A5A00 
 Turquesa primario para acción; turquesa claro solo sobre grafito.
 
 ### Variantes de paleta (revisión)
-Hay cuatro (`turquesa`, `azul`, `verde`, `indigo`). Un selector fijo abajo a la derecha las cambia en vivo; la elección queda en la URL (`?paleta=azul`) y en el navegador. Para publicar la versión final: definir `NEXT_PUBLIC_PALETTE_SWITCHER=off` en el hosting (el selector y su script desaparecen) y dejar en `palettes.css` solo la paleta elegida.
+Hay ocho (`turquesa`, `azul`, `verde`, `indigo`, `petroleo`, `violeta`, `coral`, `grafito`). Un selector fijo abajo a la derecha las cambia en vivo; la elección queda en la URL (`?paleta=azul`) y en el navegador. Para publicar la versión final: definir `NEXT_PUBLIC_PALETTE_SWITCHER=off` en el hosting (el selector y su script desaparecen) y dejar en `palettes.css` solo la paleta elegida.
 Agregar una paleta: copiar un bloque de `palettes.css`, cambiar nombre y valores, y sumarla en `src/lib/palettes.ts`. Exigir contraste AA: texto sobre fondo ≥ 4.5:1 (blanco sobre `primary`, `gray` sobre `bg`, `on-dark-muted` sobre `ink-2`).
 El favicon (`src/app/icon.svg`) es el único color que no sale de CSS: queda fijo en turquesa.
 

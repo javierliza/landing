@@ -25,7 +25,7 @@ npm run build   # build de producción
 
 ## Paletas de color
 
-Los colores se definen una sola vez en `src/styles/palettes.css`. Hay un selector de paleta para revisión interna (abajo a la derecha); la elección se comparte con `?paleta=azul|verde|indigo|turquesa`.
+Los colores se definen una sola vez en `src/styles/palettes.css`. Hay un selector de paleta para revisión interna (abajo a la derecha); la elección se comparte con `?paleta=azul|verde|indigo|petroleo|violeta|coral|grafito|turquesa`.
 
 Para **publicar la versión final** sin selector, definir en el hosting la variable de entorno:
 

@@ -82,3 +82,75 @@
   --pal-on-dark: #e0def5;
   --pal-on-dark-muted: #c0bdda;
 }
+
+/* Petróleo: verde azulado profundo */
+[data-palette="petroleo"] {
+  --pal-ink: #0f1f23;
+  --pal-ink-2: #1a3035;
+  --pal-primary: #0f6b6b;
+  --pal-primary-dark: #0b5252;
+  --pal-primary-light: #1f9690;
+  --pal-accent: #6fd3c7;
+  --pal-slate: #3b4a4c;
+  --pal-gray: #566669;
+  --pal-bg: #f3f7f7;
+  --pal-chip: #e8efef;
+  --pal-line: #dae4e4;
+  --pal-line-strong: #c8d5d5;
+  --pal-on-dark: #d3e8e6;
+  --pal-on-dark-muted: #b4c7c6;
+}
+
+/* Violeta */
+[data-palette="violeta"] {
+  --pal-ink: #1c1226;
+  --pal-ink-2: #2b1d3a;
+  --pal-primary: #7a3fa8;
+  --pal-primary-dark: #5e2f85;
+  --pal-primary-light: #a066d1;
+  --pal-accent: #d2b0f2;
+  --pal-slate: #483f55;
+  --pal-gray: #645b72;
+  --pal-bg: #f7f4fa;
+  --pal-chip: #f0ecf5;
+  --pal-line: #e4deec;
+  --pal-line-strong: #d3cce0;
+  --pal-on-dark: #e8def5;
+  --pal-on-dark-muted: #c8bdd9;
+}
+
+/* Coral: cálida, terracota */
+[data-palette="coral"] {
+  --pal-ink: #241714;
+  --pal-ink-2: #36241f;
+  --pal-primary: #b4472f;
+  --pal-primary-dark: #8f3622;
+  --pal-primary-light: #d96a4f;
+  --pal-accent: #f5b09c;
+  --pal-slate: #54433e;
+  --pal-gray: #6f5d58;
+  --pal-bg: #faf6f4;
+  --pal-chip: #f5eeeb;
+  --pal-line: #ece1dc;
+  --pal-line-strong: #e0d1ca;
+  --pal-on-dark: #f5e3dc;
+  --pal-on-dark-muted: #d9c4bc;
+}
+
+/* Grafito: neutra, casi monocroma */
+[data-palette="grafito"] {
+  --pal-ink: #121417;
+  --pal-ink-2: #1f2328;
+  --pal-primary: #2f3a47;
+  --pal-primary-dark: #222b35;
+  --pal-primary-light: #5a6b7d;
+  --pal-accent: #b8c7d6;
+  --pal-slate: #3f464e;
+  --pal-gray: #5c646d;
+  --pal-bg: #f5f6f7;
+  --pal-chip: #eceef0;
+  --pal-line: #dfe2e5;
+  --pal-line-strong: #cdd2d7;
+  --pal-on-dark: #dde3e8;
+  --pal-on-dark-muted: #bcc4cc;
+}
