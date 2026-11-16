@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { AnimatedLink } from "@/components/ruixen/animated-link";
-import { ButtonCopy } from "@/components/ruixen/button-copy";
+import { ChevronDown } from "lucide-react";
 import { ACCESS, Container, Label, LINKS, Wordmark } from "./brand";
+import { FlowRibbon } from "./flow-ribbon";
 
 const FIELD =
   "mt-1.5 block w-full rounded-[4px] border border-white/25 bg-white/10 px-3.5 py-3 text-base text-white placeholder:text-white/60 transition-colors hover:border-white/45 focus:border-white focus:bg-white/15 focus:outline-2 focus:outline-offset-0 focus:outline-white [&>option]:text-ink";
@@ -56,12 +57,15 @@ function ContactForm() {
         </label>
         <label className="text-sm font-medium">
           Producto de interés
-          <select name="interes" defaultValue="Todos" className={FIELD}>
-            <option>Todos</option>
-            <option>RP Speciality</option>
-            <option>Leannec</option>
-            <option>TurboSurge</option>
-          </select>
+          <span className="relative block">
+            <select name="interes" defaultValue="Todos" className={`${FIELD} appearance-none pr-10`}>
+              <option>Todos</option>
+              <option>RP Speciality</option>
+              <option>Leannec</option>
+              <option>TurboSurge</option>
+            </select>
+            <ChevronDown aria-hidden className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-white/80" />
+          </span>
         </label>
         <label className="text-sm font-medium sm:col-span-2">
           Mensaje
@@ -88,13 +92,11 @@ export function Contact() {
   return (
     <section
       id="contacto"
-      className="relative overflow-hidden bg-grad-contact py-16 text-white md:py-24"
+      className="relative overflow-hidden bg-primary-dark py-16 text-white md:py-24"
     >
-      {/* Halos de luz suaves (degradés radiales): uno turquesa claro arriba a la derecha y otro más profundo abajo a la izquierda. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-grad-contact-glow"
-      />
+      {/* La misma cinta de líneas de la portada, invertida: nace arriba a la izquierda y se abre hacia abajo a la
+          derecha, por detrás del formulario. Quieta y tenue, para cerrar la página con el arte con que abre. */}
+      <FlowRibbon id="contacto" className="pointer-events-none absolute inset-0 size-full -scale-y-100 opacity-70 [mask-image:linear-gradient(to_right,transparent_30%,#000_75%)]" />
       <Container className="relative grid gap-12 lg:grid-cols-12 lg:gap-x-10">
         <div className="lg:col-span-6">
           <Label dark>Contacto</Label>
@@ -113,15 +115,6 @@ export function Contact() {
             >
               {LINKS.email}
             </AnimatedLink>
-            <div className="mt-4">
-              <ButtonCopy
-                value={LINKS.email}
-                label="Copiar email"
-                copiedLabel="Copiado"
-                sound={false}
-                style={{ borderRadius: 4, fontSize: 14, padding: "10px 14px" }}
-              />
-            </div>
             <p className="mt-4 text-lg">
               <a href={LINKS.phoneHref} className="inline-block py-1 font-medium hover:underline">
                 {LINKS.phone}

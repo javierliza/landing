@@ -34,15 +34,3 @@ export function applyPalette(id: PaletteId) {
 
   window.dispatchEvent(new Event(PALETTE_EVENT));
 }
-
-/**
- * Valor actual de una variable CSS (por ejemplo `--color-primary`), para componentes que no usan CSS
- * (como el fondo WebGL). Se actualiza al cambiar de paleta.
- */
-export function useCssVar(name: string, fallback: string): string {
-  return useSyncExternalStore(
-    subscribe,
-    () => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback,
-    () => fallback,
-  );
-}

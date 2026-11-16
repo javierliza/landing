@@ -2,22 +2,10 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { Container } from "./brand";
+import { FlowRibbon } from "./flow-ribbon";
 
 const TITLE = "Gestionamos tratamientos médicos de punta a punta";
 const EASE = [0.2, 0.7, 0.2, 1] as const;
-
-/** Haz de curvas del fondo: salen juntas desde abajo a la izquierda y se abren en abanico hacia la derecha. */
-const FLOW = Array.from({ length: 18 }, (_, i) => {
-  const sy = 770 - i * 5; // arranque: apretadas
-  const ey = 30 + i * 36; // llegada: abiertas
-  return { d: `M -40 ${sy} C 560 ${sy}, 800 ${ey}, 1480 ${ey}`, o: 1 - (i % 5) * 0.1 };
-});
-/** Puntos que recorren algunas líneas: [línea, duración (s), inicio (s), clase de relleno]. */
-const DOTS: [number, number, number, string][] = [
-  [3, 11, 1.5, "fill-white"],
-  [9, 14, 4, "fill-accent"],
-  [15, 12, 7.5, "fill-white"],
-];
 
 export function Hero() {
   const reduced = useReducedMotion();
@@ -27,37 +15,13 @@ export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden bg-ink pt-[68px] text-white">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* Líneas de flujo: un haz de curvas finas que nace abajo a la izquierda y se abre hacia arriba a la derecha
-            ("de punta a punta"), con unos puntos cuadrados que las recorren. Se apaga hacia la izquierda (máscara). */}
-        <svg
-          viewBox="0 0 1440 800"
-          preserveAspectRatio="xMidYMid slice"
-          className="absolute inset-0 size-full opacity-60 [mask-image:linear-gradient(to_right,transparent_2%,rgba(0,0,0,0.35)_30%,rgba(0,0,0,0.85)_60%,#000_100%)] md:opacity-100"
-        >
-          {FLOW.map((f, i) => (
-            <motion.path
-              key={i}
-              id={`flow-${i}`}
-              d={f.d}
-              fill="none"
-              className={i % 3 === 0 ? "stroke-accent" : "stroke-primary-light"}
-              strokeWidth={i % 3 === 0 ? 2 : 1.4}
-              strokeOpacity={f.o}
-              vectorEffect="non-scaling-stroke"
-              initial={reduced ? false : { pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2.2, delay: 0.3 + i * 0.06, ease: EASE }}
-            />
-          ))}
-          {!reduced &&
-            DOTS.map(([line, dur, begin, fill]) => (
-              <rect key={line} x="-4" y="-4" width="8" height="8" className={fill}>
-                <animateMotion dur={`${dur}s`} begin={`${begin}s`} repeatCount="indefinite" calcMode="linear">
-                  <mpath href={`#flow-${line}`} />
-                </animateMotion>
-              </rect>
-            ))}
-        </svg>
+        {/* Cinta de líneas de flujo. En escritorio ocupa todo el fondo y se apaga hacia la izquierda y hacia abajo,
+            para no pasar por detrás del texto; en móvil se encuadra arriba a la derecha, sobre el titular. */}
+        <FlowRibbon
+          id="hero"
+          animated
+          className="hero-art absolute right-0 top-0 h-[68%] w-auto max-w-none md:inset-0 md:size-full"
+        />
       </div>
 
       <Container className="relative flex min-h-[calc(100svh-68px)] flex-col justify-end pb-10 pt-16 md:pb-14">

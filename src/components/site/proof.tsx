@@ -31,28 +31,29 @@ const INTERVAL = 7000;
 const CTRL = "grid size-9 place-items-center rounded-[4px] transition-colors hover:bg-chip hover:text-ink";
 
 /**
- * Clientes publicados en proelmedtech.com y leannec.com.
- * Para mostrar el logo en lugar del nombre: guardar el archivo en public/clients/ y completar `logo`.
+ * Clientes publicados en proelmedtech.com y leannec.com. Los logos (public/clients/) se bajaron de esos dos sitios.
+ * Los que no tienen `logo` se muestran con el nombre en texto: para sumarlo, guardar el archivo en public/clients/
+ * y completar `logo`.
  */
 const CLIENTS: { name: string; logo?: string }[] = [
   { name: "OSPIA" },
-  { name: "OSTEL" },
-  { name: "OSFATUN" },
-  { name: "OSPAT" },
-  { name: "Farmacity" },
-  { name: "OSPLAD" },
-  { name: "Red Salud" },
-  { name: "ANDAR" },
-  { name: "OSDIPP" },
-  { name: "Avantfar" },
-  { name: "SETIA" },
+  { name: "OSTEL", logo: "/clients/ostel.jpg" },
+  { name: "OSFATUN", logo: "/clients/osfatun.svg" },
+  { name: "OSPAT", logo: "/clients/ospat.svg" },
+  { name: "Farmacity", logo: "/clients/farmacity.svg" },
+  { name: "OSPLAD", logo: "/clients/osplad.jpg" },
+  { name: "Red Salud", logo: "/clients/red-salud.jpg" },
+  { name: "ANDAR", logo: "/clients/andar.jpg" },
+  { name: "OSDIPP", logo: "/clients/osdipp.jpg" },
+  { name: "Avantfar", logo: "/clients/avantfar.jpg" },
+  { name: "SETIA", logo: "/clients/setia.jpg" },
   { name: "Farmacia Gran Pacífico" },
-  { name: "OSPE" },
-  { name: "OSPEC" },
-  { name: "Cofarma" },
-  { name: "Drofar" },
-  { name: "Femani" },
-  { name: "Italfarma" },
+  { name: "OSPE", logo: "/clients/ospe.jpg" },
+  { name: "OSPEC", logo: "/clients/ospec.jpg" },
+  { name: "Cofarma", logo: "/clients/cofarma.jpg" },
+  { name: "Drofar", logo: "/clients/drofar.png" },
+  { name: "Femani", logo: "/clients/femani.png" },
+  { name: "Italfarma", logo: "/clients/italfarma.jpg" },
 ];
 /**
  * Clientes en una sola línea que se desliza. Al pasar el cursor la fila se detiene,
@@ -66,13 +67,14 @@ function ClientSlider() {
           <ul key={dup} className="flex shrink-0 items-center" aria-hidden={dup === 1}>
             {CLIENTS.map((c) => (
               <li key={c.name} className="flex h-20 items-center md:h-24">
-                <span className="group/item flex h-full cursor-default items-center px-7 transition-opacity duration-300 group-hover/row:opacity-30 hover:!opacity-100 md:px-10">
+                {/* El fondo va en este mismo elemento: el logo se funde con él (multiply) y así desaparece el blanco de los JPG. */}
+                <span className="group/item flex h-full cursor-default items-center bg-bg px-7 transition-opacity duration-300 group-hover/row:opacity-30 hover:!opacity-100 md:px-10">
                   {c.logo ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={c.logo}
                       alt={c.name}
-                      className="max-h-9 w-auto object-contain opacity-70 mix-blend-multiply grayscale transition-[filter,opacity,transform] duration-300 group-hover/item:scale-110 group-hover/item:opacity-100 group-hover/item:grayscale-0"
+                      className="h-9 w-auto max-w-[150px] object-contain opacity-60 mix-blend-multiply grayscale contrast-125 transition-[filter,opacity,transform] duration-300 group-hover/item:scale-110 group-hover/item:opacity-100 group-hover/item:grayscale-0 md:h-10"
                     />
                   ) : (
                     <span className="relative whitespace-nowrap text-xl font-semibold tracking-[-0.02em] text-slate transition-[color,transform] duration-300 after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 group-hover/item:scale-105 group-hover/item:text-ink group-hover/item:after:scale-x-100 md:text-2xl">
