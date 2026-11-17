@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
 type AnimatedLinkVariant = "left" | "right" | "center";
@@ -21,7 +20,7 @@ export interface AnimatedLinkProps extends React.ComponentPropsWithoutRef<"a"> {
   showArrow?: boolean;
 }
 
-const AnimatedLink = ({
+export const AnimatedLink = ({
   variant = "left",
   showArrow = true,
   className,
@@ -62,5 +61,4 @@ const AnimatedLink = ({
   );
 };
 
-export { AnimatedLink };
 export default AnimatedLink;

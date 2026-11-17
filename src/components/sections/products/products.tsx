@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { Container, Label, LINKS } from "./brand";
+import { Container } from "@/components/ui/container";
+import { Label } from "@/components/ui/label";
+import { LINKS } from "@/constants/site";
 
 /** Un producto nuevo = un objeto más en este arreglo (un mosaico más en la capa de productos) y su dibujo en GLYPHS. */
 const PRODUCTS: {

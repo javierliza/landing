@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
-import { Split } from "./brand";
+import { Split } from "@/components/ui/split";
 
 const SENTENCE =
   "Desde 2009 gestionamos 10.000 tratamientos médicos por mes, con 270.000 usuarios en la aplicación mobile y 320 farmacias conectadas en todo el país.";
@@ -39,10 +39,7 @@ export function About() {
   const lit = reduced ? MILESTONES.length : reached;
 
   return (
-    <section
-      id="nosotros"
-      className="bg-white py-16 md:py-24"
-    >
+    <section id="nosotros" className="bg-white py-16 md:py-24">
       <Split label="Nosotros">
         <p ref={textRef} className="text-[30px] font-semibold leading-[1.14] tracking-[-0.03em] sm:text-[44px] lg:text-[52px]">
           {reduced
@@ -62,7 +59,7 @@ export function About() {
           cumpliendo la normativa vigente.
         </p>
 
-        {/* Trayectoria: una línea continua con nodos cuadrados (el mismo dibujo del circuito de Productos) que se va llenando al bajar. */}
+        {/* Trayectoria: una línea continua con nodos cuadrados que se va llenando al bajar. */}
         <ol ref={lineRef} className="mt-16 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-24 lg:grid-cols-4">
           {MILESTONES.map(([y, t, d], i) => {
             const on = i < lit;

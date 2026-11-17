@@ -1,14 +1,12 @@
 /**
- * Paletas disponibles. Los colores viven en src/styles/palettes.css; acá solo el id (el valor de
- * `data-palette` y del parámetro `?paleta=`) y la etiqueta que ve la persona. Mantener ambos archivos
- * sincronizados.
+ * Paletas disponibles. Los colores viven en src/styles/palettes.css.
  */
 export const PALETTES = [
+  { id: "petroleo", label: "Petróleo" },
   { id: "turquesa", label: "Turquesa" },
   { id: "azul", label: "Azul" },
   { id: "verde", label: "Verde" },
   { id: "indigo", label: "Índigo" },
-  { id: "petroleo", label: "Petróleo" },
   { id: "violeta", label: "Violeta" },
   { id: "coral", label: "Coral" },
   { id: "grafito", label: "Grafito" },
@@ -16,26 +14,24 @@ export const PALETTES = [
 
 export type PaletteId = (typeof PALETTES)[number]["id"];
 
-/** Paleta de producción: la que rige cuando no hay `data-palette` en <html>. */
-export const DEFAULT_PALETTE: PaletteId = "turquesa";
+/** Paleta de producción: Petróleo rige por defecto. */
+export const DEFAULT_PALETTE: PaletteId = "petroleo";
 
 export const PALETTE_PARAM = "paleta";
 export const PALETTE_STORAGE_KEY = "proel-paleta";
 export const PALETTE_EVENT = "proel:palette";
 
 /**
- * El selector de paletas es una herramienta de revisión. Está activo salvo que se defina
- * NEXT_PUBLIC_PALETTE_SWITCHER=off (en Vercel: Settings → Environment Variables) para publicar la versión final.
+ * El selector de paletas está desactivado para el frontend de producción.
  */
-export const PALETTE_SWITCHER_ENABLED = process.env.NEXT_PUBLIC_PALETTE_SWITCHER !== "off";
+export const PALETTE_SWITCHER_ENABLED = false;
 
 export function isPaletteId(value: unknown): value is PaletteId {
   return PALETTES.some((p) => p.id === value);
 }
 
 /**
- * Script que corre antes del primer pintado (en <head>) para aplicar la paleta elegida desde la URL o el
- * almacenamiento local y así evitar un parpadeo con la paleta por defecto.
+ * Script de inicialización de paleta en caso de soporte de variables.
  */
 export const PALETTE_BOOT_SCRIPT = `(function(){try{var ids=${JSON.stringify(
   PALETTES.map((p) => p.id),

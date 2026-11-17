@@ -1,19 +1,12 @@
-import { Nav } from "@/components/site/nav";
-import { Hero } from "@/components/site/hero";
-import { About } from "@/components/site/about";
-import { Products } from "@/components/site/products";
-import { Clients } from "@/components/site/proof";
-import { Contact, Footer } from "@/components/site/closing";
-import { RevealObserver } from "@/components/site/brand";
-import { SectionRail } from "@/components/site/rail";
-import { PaletteSwitcher } from "@/components/site/palette-switcher";
-import { PALETTE_SWITCHER_ENABLED } from "@/lib/palettes";
+import { RevealObserver } from "@/components/common/reveal-observer";
+import { Footer, Navbar, SectionRail } from "@/components/layout";
+import { About, Clients, Contact, Hero, Products } from "@/components/sections";
 
 export default function Home() {
   return (
     <>
       <RevealObserver />
-      <Nav />
+      <Navbar />
       <SectionRail />
       <main>
         <Hero />
@@ -23,7 +16,6 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-      {PALETTE_SWITCHER_ENABLED && <PaletteSwitcher />}
     </>
   );
 }

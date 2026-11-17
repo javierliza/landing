@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { Container } from "./brand";
+import { Container } from "@/components/ui/container";
 import { DotRelief } from "./dot-relief";
 
 const TITLE = "Gestionamos tratamientos médicos de punta a punta";

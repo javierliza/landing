@@ -1,19 +1,11 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { ChapterScrubber } from "@/components/ruixen/chapter-scrubber";
-
-const CHAPTERS = [
-  { id: "top", title: "Inicio", description: "Gestionamos tratamientos médicos de punta a punta." },
-  { id: "nosotros", title: "Nosotros", description: "Quiénes somos y nuestra trayectoria desde 2009." },
-  { id: "productos", title: "Productos", description: "RP Speciality, Leannec, TurboSurge y Onco-Office sobre una misma plataforma." },
-  { id: "clientes", title: "Clientes", description: "Testimonios y organizaciones que confían en Proel." },
-  { id: "contacto", title: "Contacto", description: "Pedí una demo o escribinos." },
-];
-const DARK = new Set(["top", "productos", "contacto"]);
+import { ChapterScrubber } from "@/components/ui/chapter-scrubber";
+import { CHAPTERS, DARK_SECTIONS } from "@/constants/navigation";
 
 /**
- * Riel lateral de secciones (bloque Chapter Scrubber de Ruixen). Solo en pantallas anchas:
+ * Riel lateral de secciones (Chapter Scrubber). Solo en pantallas anchas:
  * aparece al salir de la portada, muestra en qué sección estás, anticipa cada una al pasar el cursor y salta al hacer clic.
  */
 export function SectionRail() {
@@ -34,8 +26,8 @@ export function SectionRail() {
     return () => io.disconnect();
   }, []);
 
-  // Sobre secciones oscuras las marcas pasan a blanco y la activa a turquesa claro.
-  const dark = DARK.has(CHAPTERS[current]?.id);
+  // Sobre secciones oscuras las marcas pasan a blanco y la activa al acento.
+  const dark = DARK_SECTIONS.has(CHAPTERS[current]?.id);
   const tone = {
     "--rail-tick": dark ? "#ffffff" : "var(--color-ink)",
     "--rail-current": dark ? "var(--color-accent)" : "var(--color-primary)",
@@ -62,3 +54,6 @@ export function SectionRail() {
     </div>
   );
 }
+
+// Named alias
+export { SectionRail as Rail };

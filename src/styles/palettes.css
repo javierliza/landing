@@ -1,17 +1,30 @@
 /*
  * Paletas de color. Única fuente de verdad de los colores de la marca.
  *
- * Cada paleta define los mismos 14 tokens `--pal-*`. La paleta activa es la del atributo
- * `data-palette` del <html>; sin atributo rige `turquesa` (la de producción). Los tokens
- * `--color-*` de Tailwind (globals.css) apuntan a estos, así que cambiar de paleta recolorea
- * toda la página sin tocar componentes.
- *
- * Para agregar una paleta: copiar un bloque, cambiar el nombre y los valores, y sumar el id y la
- * etiqueta en src/lib/palettes.ts. Verificar contraste AA (texto sobre fondo ≥ 4.5:1).
+ * Cada paleta define los mismos 14 tokens `--pal-*`. La paleta activa por defecto es `petroleo`.
+ * Los tokens `--color-*` de Tailwind (globals.css) apuntan a estos.
  */
 
-/* Turquesa y grafito: la paleta vigente (DESIGN.md). */
+/* Petróleo: verde azulado profundo (paleta de producción) */
 :root,
+[data-palette="petroleo"] {
+  --pal-ink: #0f1f23;
+  --pal-ink-2: #1a3035;
+  --pal-primary: #0f6b6b;
+  --pal-primary-dark: #0b5252;
+  --pal-primary-light: #1f9690;
+  --pal-accent: #6fd3c7;
+  --pal-slate: #3b4a4c;
+  --pal-gray: #566669;
+  --pal-bg: #f3f7f7;
+  --pal-chip: #e8efef;
+  --pal-line: #dae4e4;
+  --pal-line-strong: #c8d5d5;
+  --pal-on-dark: #d3e8e6;
+  --pal-on-dark-muted: #b4c7c6;
+}
+
+/* Turquesa y grafito */
 [data-palette="turquesa"] {
   --pal-ink: #111827;
   --pal-ink-2: #1f2a3c;
@@ -56,7 +69,7 @@
   --pal-primary-light: #2fa57c;
   --pal-accent: #7fd1ae;
   --pal-slate: #3b4a44;
-  --pal-gray: #566660;
+  --pal-gray: #566669;
   --pal-bg: #f3f7f5;
   --pal-chip: #e8efec;
   --pal-line: #dae4df;
@@ -81,24 +94,6 @@
   --pal-line-strong: #cfcce0;
   --pal-on-dark: #e0def5;
   --pal-on-dark-muted: #c0bdda;
-}
-
-/* Petróleo: verde azulado profundo */
-[data-palette="petroleo"] {
-  --pal-ink: #0f1f23;
-  --pal-ink-2: #1a3035;
-  --pal-primary: #0f6b6b;
-  --pal-primary-dark: #0b5252;
-  --pal-primary-light: #1f9690;
-  --pal-accent: #6fd3c7;
-  --pal-slate: #3b4a4c;
-  --pal-gray: #566669;
-  --pal-bg: #f3f7f7;
-  --pal-chip: #e8efef;
-  --pal-line: #dae4e4;
-  --pal-line-strong: #c8d5d5;
-  --pal-on-dark: #d3e8e6;
-  --pal-on-dark-muted: #b4c7c6;
 }
 
 /* Violeta */

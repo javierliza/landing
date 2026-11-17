@@ -3,18 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll } from "motion/react";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { ACCESS, Container, LINKS, Wordmark } from "./brand";
-
-const NAV = [
-  ["Nosotros", "nosotros"],
-  ["Productos", "productos"],
-  ["Clientes", "clientes"],
-  ["Contacto", "contacto"],
-];
+import { Container } from "@/components/ui/container";
+import { Wordmark } from "@/components/ui/wordmark";
+import { ACCESS, LINKS } from "@/constants/site";
+import { NAV_ITEMS } from "@/constants/navigation";
 
 function AccessMenu({ light = false }: { light?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
     const down = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
@@ -26,6 +23,7 @@ function AccessMenu({ light = false }: { light?: boolean }) {
       document.removeEventListener("keydown", key);
     };
   }, [open]);
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -61,13 +59,13 @@ function AccessMenu({ light = false }: { light?: boolean }) {
   );
 }
 
-export function Nav() {
+export function Navbar() {
   const [menu, setMenu] = useState(false);
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
 
-  // Sobre la portada el encabezado es un vidrio oscuro (grafito con desenfoque) con texto blanco; al bajar pasa a vidrio claro.
+  // Sobre la portada el encabezado es un vidrio oscuro con texto blanco; al bajar pasa a vidrio claro.
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
     on();
@@ -82,7 +80,7 @@ export function Nav() {
       (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
       { rootMargin: "-45% 0px -50% 0px" },
     );
-    ["top", ...NAV.map(([, id]) => id)].forEach((id) => {
+    ["top", ...NAV_ITEMS.map((item) => item.href)].forEach((id) => {
       const el = document.getElementById(id);
       if (el) io.observe(el);
     });
@@ -100,18 +98,18 @@ export function Nav() {
           <Wordmark light={light} className="transition-colors duration-300" />
         </a>
         <nav className="hidden items-center gap-8 text-[15px] font-medium lg:flex" aria-label="Principal">
-          {NAV.map(([l, id]) => {
-            const on = active === id;
+          {NAV_ITEMS.map(({ label, href }) => {
+            const on = active === href;
             return (
               <a
-                key={id}
-                href={`#${id}`}
+                key={href}
+                href={`#${href}`}
                 aria-current={on ? "true" : undefined}
                 className={`relative py-1 transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100 ${
                   light ? "after:bg-accent hover:text-white" : "after:bg-primary hover:text-ink"
                 } ${on ? `after:scale-x-100 ${light ? "text-white" : "text-ink"}` : `after:scale-x-0 ${light ? "text-white" : "text-slate"}`}`}
               >
-                {l}
+                {label}
               </a>
             );
           })}
@@ -125,28 +123,34 @@ export function Nav() {
             onClick={() => setMenu((v) => !v)}
             aria-label={menu ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menu}
-            className={`grid size-10 place-items-center rounded-[4px] border transition-colors lg:hidden ${light ? "border-white/40 text-white" : "border-line-strong text-ink"}`}
+            className={`grid size-10 place-items-center rounded-[4px] border transition-colors lg:hidden ${
+              light ? "border-white/40 text-white" : "border-line-strong text-ink"
+            }`}
           >
             {menu ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </Container>
 
-      {/* progreso de lectura */}
-      <motion.div aria-hidden className={`absolute inset-x-0 -bottom-px h-0.5 origin-left ${light ? "bg-accent" : "bg-primary"}`} style={{ scaleX: scrollYProgress }} />
+      {/* Progreso de lectura */}
+      <motion.div
+        aria-hidden
+        className={`absolute inset-x-0 -bottom-px h-0.5 origin-left ${light ? "bg-accent" : "bg-primary"}`}
+        style={{ scaleX: scrollYProgress }}
+      />
 
       {menu && (
         <div className="border-t border-line bg-white lg:hidden">
           <Container className="py-2">
-            {NAV.map(([l, id], i) => (
+            {NAV_ITEMS.map(({ label, href }, i) => (
               <a
-                key={id}
-                href={`#${id}`}
+                key={href}
+                href={`#${href}`}
                 onClick={() => setMenu(false)}
                 className="rise block border-b border-line py-3.5 text-[15px] font-medium"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
-                {l}
+                {label}
               </a>
             ))}
             <p className="pb-1 pt-4 text-xs font-medium text-gray">Acceso usuarios</p>
@@ -161,3 +165,6 @@ export function Nav() {
     </header>
   );
 }
+
+// Named alias for convenience
+export { Navbar as Nav };

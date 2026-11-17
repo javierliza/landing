@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { DEFAULT_PALETTE, PALETTE_EVENT, PALETTE_PARAM, PALETTE_STORAGE_KEY, type PaletteId } from "./palettes";
+import { DEFAULT_PALETTE, PALETTE_EVENT, PALETTE_PARAM, PALETTE_STORAGE_KEY, type PaletteId } from "@/lib/palettes";
 
 function subscribe(onChange: () => void) {
   window.addEventListener(PALETTE_EVENT, onChange);

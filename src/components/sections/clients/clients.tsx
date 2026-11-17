@@ -3,58 +3,13 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
-import { Container, Split } from "./brand";
-
-/** Testimonios publicados en proelmedtech.com. */
-const TESTIMONIALS = [
-  {
-    quote:
-      "Mediante Proel integramos la gestión de compra de medicamentos de alto costo en todas las delegaciones del interior del país.",
-    who: "Ricardo Altamirano",
-    org: "OSPIA",
-  },
-  {
-    quote:
-      "Proel es una herramienta de trabajo práctica y eficaz, que brinda transparencia en la gestión de compra. Indispensable en este siglo XXI para las organizaciones de la salud.",
-    who: "Elizabeth Borja",
-    org: "OSTEL",
-  },
-  {
-    quote:
-      "La última versión de Proel es muy interesante y rápida, sobre todo en la dispensación de medicamentos ante la ANMAT.",
-    who: "Leopoldo Festino",
-    org: "Farmacia Gran Pacífico",
-  },
-];
+import { Container } from "@/components/ui/container";
+import { Split } from "@/components/ui/split";
+import { CLIENTS, TESTIMONIALS } from "@/constants/clients";
 
 const INTERVAL = 7000;
 const CTRL = "grid size-9 place-items-center rounded-[4px] transition-colors hover:bg-chip hover:text-ink";
 
-/**
- * Clientes publicados en proelmedtech.com y leannec.com. Los logos (public/clients/) se bajaron de esos dos sitios.
- * Los que no tienen `logo` se muestran con el nombre en texto: para sumarlo, guardar el archivo en public/clients/
- * y completar `logo`.
- */
-const CLIENTS: { name: string; logo?: string }[] = [
-  { name: "OSPIA" },
-  { name: "OSTEL", logo: "/clients/ostel.jpg" },
-  { name: "OSFATUN", logo: "/clients/osfatun.svg" },
-  { name: "OSPAT", logo: "/clients/ospat.svg" },
-  { name: "Farmacity", logo: "/clients/farmacity.svg" },
-  { name: "OSPLAD", logo: "/clients/osplad.jpg" },
-  { name: "Red Salud", logo: "/clients/red-salud.jpg" },
-  { name: "ANDAR", logo: "/clients/andar.jpg" },
-  { name: "OSDIPP", logo: "/clients/osdipp.jpg" },
-  { name: "Avantfar", logo: "/clients/avantfar.jpg" },
-  { name: "SETIA", logo: "/clients/setia.jpg" },
-  { name: "Farmacia Gran Pacífico" },
-  { name: "OSPE", logo: "/clients/ospe.jpg" },
-  { name: "OSPEC", logo: "/clients/ospec.jpg" },
-  { name: "Cofarma", logo: "/clients/cofarma.jpg" },
-  { name: "Drofar", logo: "/clients/drofar.png" },
-  { name: "Femani", logo: "/clients/femani.png" },
-  { name: "Italfarma", logo: "/clients/italfarma.jpg" },
-];
 /**
  * Clientes en una sola línea que se desliza. Al pasar el cursor la fila se detiene,
  * el cliente señalado se resalta y los demás se atenúan.
@@ -109,13 +64,12 @@ export function Clients() {
   }, [auto, i, n]);
 
   return (
-    <section
-      id="clientes"
-      className="bg-bg py-16 md:py-24"
-    >
+    <section id="clientes" className="bg-bg py-16 md:py-24">
       <Split label="Clientes">
         <figure
-          className={`relative overflow-hidden rounded-[6px] border border-line bg-white p-6 shadow-[0_24px_60px_-40px_rgb(0_0_0/.3)] sm:p-9 lg:p-12 ${paused || stopped ? "is-paused" : ""}`}
+          className={`relative overflow-hidden rounded-[6px] border border-line bg-white p-6 shadow-[0_24px_60px_-40px_rgb(0_0_0/.3)] sm:p-9 lg:p-12 ${
+            paused || stopped ? "is-paused" : ""
+          }`}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
@@ -167,9 +121,16 @@ export function Clients() {
                       className="group flex h-8 items-center"
                     >
                       <span
-                        className={`relative block h-0.5 overflow-hidden transition-all duration-300 ${on ? "w-10 bg-line-strong" : "w-5 bg-line-strong group-hover:bg-gray"}`}
+                        className={`relative block h-0.5 overflow-hidden transition-all duration-300 ${
+                          on ? "w-10 bg-line-strong" : "w-5 bg-line-strong group-hover:bg-gray"
+                        }`}
                       >
-                        {on && <span key={`${i}-${reduced}`} className={`absolute inset-0 bg-primary ${reduced ? "" : "auto-progress"}`} />}
+                        {on && (
+                          <span
+                            key={`${i}-${reduced}`}
+                            className={`absolute inset-0 bg-primary ${reduced ? "" : "auto-progress"}`}
+                          />
+                        )}
                       </span>
                     </button>
                   );
@@ -180,17 +141,31 @@ export function Clients() {
                   <button
                     type="button"
                     aria-pressed={stopped}
-                    aria-label={stopped ? "Reanudar el avance automático de testimonios" : "Pausar el avance automático de testimonios"}
+                    aria-label={
+                      stopped
+                        ? "Reanudar el avance automático de testimonios"
+                        : "Pausar el avance automático de testimonios"
+                    }
                     onClick={() => setStopped((v) => !v)}
                     className={CTRL}
                   >
                     {stopped ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
                   </button>
                 )}
-                <button type="button" aria-label="Testimonio anterior" onClick={() => setI((v) => (v - 1 + n) % n)} className={CTRL}>
+                <button
+                  type="button"
+                  aria-label="Testimonio anterior"
+                  onClick={() => setI((v) => (v - 1 + n) % n)}
+                  className={CTRL}
+                >
                   <ArrowLeft className="size-4" />
                 </button>
-                <button type="button" aria-label="Testimonio siguiente" onClick={() => setI((v) => (v + 1) % n)} className={CTRL}>
+                <button
+                  type="button"
+                  aria-label="Testimonio siguiente"
+                  onClick={() => setI((v) => (v + 1) % n)}
+                  className={CTRL}
+                >
                   <ArrowRight className="size-4" />
                 </button>
               </div>
@@ -199,8 +174,7 @@ export function Clients() {
         </figure>
       </Split>
 
-      {/* Fila de clientes en la misma grilla que el testimonio: el rótulo en la columna de rótulos y los logos
-          alineados con los bordes de la tarjeta, como continuación del mismo bloque. */}
+      {/* Fila de clientes en la misma grilla que el testimonio */}
       <Container className="mt-8 grid gap-y-4 md:mt-10 lg:grid-cols-12 lg:items-center lg:gap-x-10">
         <h3 className="reveal text-sm font-medium text-gray lg:col-span-3">Confían en nosotros</h3>
         <div className="min-w-0 lg:col-span-9">
@@ -210,3 +184,6 @@ export function Clients() {
     </section>
   );
 }
+
+// Named alias
+export { Clients as Proof };

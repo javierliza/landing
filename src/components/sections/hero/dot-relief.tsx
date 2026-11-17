@@ -41,14 +41,14 @@ function readColor(ctx: CanvasRenderingContext2D, name: string, fallback: string
   ctx.fillStyle = fallback;
   ctx.fillStyle = value;
   const hex = String(ctx.fillStyle);
-  if (!hex.startsWith("#")) return [103, 200, 218];
+  if (!hex.startsWith("#")) return [111, 211, 199];
   return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as Rgb;
 }
 
-/** Escala de tonos de valle a cresta: turquesa → turquesa claro → blanco. */
+/** Escala de tonos de valle a cresta: primario claro → acento → blanco. */
 function buildShades(ctx: CanvasRenderingContext2D): string[] {
-  const low = readColor(ctx, "--color-primary-light", "#1a93b3");
-  const mid = readColor(ctx, "--color-accent", "#67c8da");
+  const low = readColor(ctx, "--color-primary-light", "#1f9690");
+  const mid = readColor(ctx, "--color-accent", "#6fd3c7");
   const high: Rgb = [255, 255, 255];
   const mix = (p: Rgb, q: Rgb, t: number) => p.map((v, i) => Math.round(v + (q[i] - v) * t));
   return Array.from({ length: SHADES }, (_, i) => {

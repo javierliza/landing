@@ -1,6 +1,6 @@
 # Proel Medical Technologies · landing
 
-Landing de Proel (productos Leannec, RP Speciality y TurboSurge). Next.js 16 (App Router), React 19, Tailwind CSS 4 y `motion`.
+Landing de Proel (productos Leannec, RP Speciality, Onco-Office y TurboSurge). Next.js 16 (App Router), React 19, Tailwind CSS 4 y `motion`.
 
 > Antes de tocar la interfaz, leer [DESIGN.md](DESIGN.md): manda sobre cualquier otro estilo.
 
@@ -13,28 +13,21 @@ npm run lint
 npm run build   # build de producción
 ```
 
-## Estructura
+## Estructura (Senior Clean Architecture)
 
 | Ruta | Contenido |
 | --- | --- |
-| `src/app` | Layout, página única y estilos globales (`globals.css`) |
-| `src/components/site` | Secciones de la landing (hero, nosotros, productos, clientes, contacto) |
-| `src/components/ruixen` | Bloques de Ruixen en uso, adaptados a la paleta |
-| `src/styles/palettes.css` | Colores de la marca: una paleta por bloque |
-| `src/lib` | Paletas, hook de paleta y utilidades |
+| `src/app` | Layout, página principal (`page.tsx`), favicon y estilos globales (`globals.css`) |
+| `src/components/ui` | Primitivas y componentes atómicos de UI (Container, Wordmark, Label, Split, AnimatedLink, etc.) |
+| `src/components/layout` | Componentes estructurales de diseño (Navbar, Footer, SectionRail) |
+| `src/components/sections` | Secciones modulares de la landing (`hero`, `about`, `products`, `clients`, `contact`) |
+| `src/components/common` | Observadores y utilidades de renderizado transversal (`RevealObserver`) |
+| `src/constants` | Constantes de la aplicación (enlaces, accesos, navegación, testimonios, clientes) |
+| `src/hooks` | Hooks personalizados de React (`usePalette`) |
+| `src/lib` | Utilidades puras (`cn` / `utils.ts`, configuración de `palettes.ts`) |
+| `src/styles` | Tokens de diseño y paletas de color (`palettes.css`) |
+| `src/types` | Definiciones e interfaces de TypeScript |
 
-## Paletas de color
+## Paleta de color
 
-Los colores se definen una sola vez en `src/styles/palettes.css`. Hay un selector de paleta para revisión interna (abajo a la derecha); la elección se comparte con `?paleta=azul|verde|indigo|petroleo|violeta|coral|grafito|turquesa`.
-
-Para **publicar la versión final** sin selector, definir en el hosting la variable de entorno:
-
-```
-NEXT_PUBLIC_PALETTE_SWITCHER=off
-```
-
-y volver a desplegar (se aplica en el build). Detalle en [DESIGN.md](DESIGN.md#variantes-de-paleta-revisión).
-
-## Contenido pendiente
-
-Capturas reales de los productos (`image` en `PRODUCTS`, `src/components/site/products.tsx`), logos de clientes (`logo` en `CLIENTS`, `src/components/site/proof.tsx`), logo oficial y datos de contacto de Proel. Ver DESIGN.md → Contenido.
+La paleta institucional rige en modo **Petróleo** por defecto en `:root` dentro de `src/styles/palettes.css`. El selector flotante ha sido retirado de la vista frontal.
